@@ -107,7 +107,7 @@ function matRotZ3D(t){
           0,  0,  0,  1]   
 }
 function matPerspective(near, far, fov){
-  const aspct = document.getElementById("canvas").clientWidth / document.getElementById("canvas").clientHeight;
+  const aspct = 800 / 500;
   var f = Math.tan(Math.PI * 0.5 - 0.5 * fov);
   var rangeInv = 1.0 / (near - far);
   return [f/aspct, 0, 0, 0,
@@ -429,6 +429,35 @@ function create3Df(){
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
   return positions.length/3;
 }
+function createFColors(){
+  var positions = [
+      // left column
+      0.78,  0.27, 0.47,
+      0.78,  0.27, 0.47,
+      0.78,  0.27, 0.47,
+      0.78, 0.78, 0.27,
+      0.78, 0.78, 0.27,
+      0.78, 0.78, 0.27,
+
+      // top rung
+      0.78,  0.27, 0.47,
+      0.78,  0.27, 0.47,
+      0.78,  0.27, 0.47,
+      0.78, 0.78, 0.27,
+      0.78, 0.78, 0.27,
+      0.78, 0.78, 0.27,
+
+      // middle rung
+      0.78,  0.27, 0.47,
+      0.78,  0.27, 0.47,
+      0.78,  0.27, 0.47,
+      0.78, 0.78, 0.27,
+      0.78, 0.78, 0.27,
+      0.78, 0.78, 0.27,
+  ];
+  return positions;
+}
+
 
 function create3DF(){
   var positions = [

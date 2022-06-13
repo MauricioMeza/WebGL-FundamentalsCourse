@@ -1,8 +1,7 @@
 //-------------------------------------
 //----------VertexShader---------------
 //-------------------------------------
-const glsl = x => x;
-const vert_shader = glsl`
+vert_shader = glsl`
     //receive data from Buffer into gl_position (pos of current vertex)
     attribute vec2 a_position;
     uniform mat3 u_matrix;
@@ -17,7 +16,7 @@ const vert_shader = glsl`
 //-------------------------------------
 //----------FragmentShader-------------
 //-------------------------------------
-const frag_shader = glsl`
+frag_shader = glsl`
 
 precision mediump float;
      //Turn pixel into the uniform color
@@ -38,7 +37,7 @@ main();
 //Main Function
 function main(){
     //Get canvas, context and programs
-    var canvas = document.getElementById("canvas");
+    var canvas = document.getElementById("canvas_07");
     var gl = canvas.getContext("webgl");
     var program = createProgramFromShaders(gl, vert_shader, frag_shader);
     gl.useProgram(program);
@@ -47,7 +46,7 @@ function main(){
     var colorUniformLocation = gl.getUniformLocation(program, "u_color")
     gl.uniform4f(colorUniformLocation, 1, 0, 0.5, 1);
 
-    const matrix = getMatrix2D(0, 0, -1, 1, Math.PI);
+    const matrix = getMatrix2D(0.1, -0.1, -2, 2, Math.PI*0.3);
     var translateUniformLocation = gl.getUniformLocation(program, "u_matrix")
     gl.uniformMatrix3fv(translateUniformLocation, false, matrix);
 
@@ -61,7 +60,7 @@ function main(){
     
     //Deifine Screen
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-    gl.clearColor(0,0,0,0)
+    gl.clearColor(1,1,1,1)
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     //Draw

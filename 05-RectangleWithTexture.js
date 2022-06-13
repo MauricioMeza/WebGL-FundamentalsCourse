@@ -1,23 +1,22 @@
 //-------------------------------------
 //----------VertexShader---------------
 //-------------------------------------
-const glsl = x => x;
-const vert_shader = glsl`
+vert_shader = glsl`
     //receive data from Buffer into gl_position (pos of current vertex)
-    attribute vec4 a_position;
+    attribute vec2 a_position;
     attribute vec2 a_texture;
     varying vec2 v_texture;
 
     void main() {
         v_texture = a_texture;
-        gl_Position = a_position;    
+        gl_Position = vec4(a_position, 1.0, 1.0);    
     }
 `;
 
 //-------------------------------------
 //----------FragmentShader-------------
 //-------------------------------------
-const frag_shader = glsl`
+frag_shader = glsl`
 
 precision mediump float;
      //Turn pixel into the uniform color
@@ -45,7 +44,7 @@ function main(){
 //Main Function
 function render(img){
     //Get canvas, context and programs
-    var canvas = document.getElementById("canvas");
+    var canvas = document.getElementById("canvas_05");
     var gl = canvas.getContext("webgl");
     var program = createProgramFromShaders(gl, vert_shader, frag_shader);
     gl.useProgram(program);
@@ -88,6 +87,9 @@ function render(img){
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     gl.clearColor(0,0,0,0)
     gl.clear(gl.COLOR_BUFFER_BIT);
+
+    //Draw
+    gl.drawArrays(gl.TRIANGLES, 0, 6)
 
     //Draw
     gl.drawArrays(gl.TRIANGLES, 0, 6)

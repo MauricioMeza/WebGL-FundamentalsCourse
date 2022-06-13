@@ -1,16 +1,16 @@
 //-------------------------------------
 //----------VertexShader---------------
 //-------------------------------------
-const glsl = x => x;
-const vert_shader = glsl`
+vert_shader = glsl`
     //receive data from Buffer into gl_position (pos of current vertex)
     //**** Pass vertex info ****//
     attribute vec4 a_position;
+    attribute vec4 a_color;
     varying vec4 v_color;
  
     void main() {
         gl_Position = a_position;
-        v_color = gl_Position;
+        v_color = a_color;
     }
 
 `;
@@ -18,8 +18,7 @@ const vert_shader = glsl`
 //-------------------------------------
 //----------FragmentShader-------------
 //-------------------------------------
-const frag_shader = glsl`
-
+frag_shader = glsl`
 precision mediump float;
     //Turn pixel into the uniform color
     //**** To fragment shader ****//
@@ -36,7 +35,7 @@ main();
 //Main Function
 function main(){
     //Get canvas, context and programs
-    var canvas = document.getElementById("canvas");
+    var canvas = document.getElementById("canvas_03");
     var gl = canvas.getContext("webgl");
     var program = createProgramFromShaders(gl, vert_shader, frag_shader);
     gl.useProgram(program);
@@ -53,10 +52,23 @@ function main(){
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
     gl.enableVertexAttribArray(positionAttributeLocation);
     gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
+
+    var colorAttributeLocation = gl.getAttribLocation(program, "a_color")
+    var colorBuffer = gl.createBuffer()
+    gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+    var positions = [
+        0, 0, 1,
+        0, 1, 0,
+        1, 0, 0
+    ];
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(colorAttributeLocation);
+    gl.vertexAttribPointer(colorAttributeLocation, 3, gl.FLOAT, false, 0, 0);
+
     
     //Deifine Screen
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-    gl.clearColor(0,0,0,0)
+    gl.clearColor(1,1,1,1)
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     //Draw

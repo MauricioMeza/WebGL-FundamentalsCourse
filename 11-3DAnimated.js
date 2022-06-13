@@ -1,8 +1,7 @@
 //-------------------------------------
 //----------VertexShader---------------
 //-------------------------------------
-const glsl = x => x;
-const vert_shader = glsl`
+vert_shader = glsl`
     //receive data from Buffer into gl_position (pos of current vertex)
     attribute vec4 a_position;
     attribute vec4 a_color;
@@ -21,7 +20,7 @@ const vert_shader = glsl`
 //-------------------------------------
 //----------FragmentShader-------------
 //-------------------------------------
-const frag_shader = glsl`
+frag_shader = glsl`
 
 precision mediump float;
      //Turn pixel into the uniform color
@@ -41,7 +40,7 @@ main();
 //Main Function
 function main(){
     //Get canvas, context and programs
-    var canvas = document.getElementById("canvas");
+    var canvas = document.getElementById("canvas_11");
     var gl = canvas.getContext("webgl");
     var program = createProgramFromShaders(gl, vert_shader, frag_shader);
     gl.useProgram(program);
@@ -74,13 +73,14 @@ function main(){
     gl.enable(gl.DEPTH_TEST) 
     gl.enable(gl.CULL_FACE)
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-    gl.clearColor(0,0,0,0)
-    gl.clear(gl.COLOR_BUFFER_BIT);
+    
 
     var Ry = 0;
     requestAnimationFrame(anim);
     //Draw
     function anim(){
+        gl.clearColor(1,1,1,1)
+        gl.clear(gl.COLOR_BUFFER_BIT);
         Ry += 0.01;
         drawF(gl, program, F.length/3, {x:0, y:0, z:0, sx:2, sy:2, sz:2, rx:0, ry:Ry, rz:3.1416});
         requestAnimationFrame(anim);

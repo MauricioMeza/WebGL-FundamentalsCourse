@@ -1,8 +1,8 @@
 //-------------------------------------
 //----------VertexShader---------------
 //-------------------------------------
-const glsl = x => x;
-const vert_shader = glsl`
+//const glsl = x => x;
+vert_shader = glsl`
     //receive data from Buffer into gl_position (pos of current vertex)
     attribute vec4 a_position;
  
@@ -15,7 +15,7 @@ const vert_shader = glsl`
 //-------------------------------------
 //----------FragmentShader-------------
 //-------------------------------------
-const frag_shader = glsl`
+frag_shader = glsl`
 
 precision mediump float;
      //Turn pixel into the uniform color
@@ -33,7 +33,7 @@ main();
 //Main Function
 function main(){
     //Get canvas, context and programs
-    var canvas = document.getElementById("canvas");
+    var canvas = document.getElementById("canvas_02");
     var gl = canvas.getContext("webgl");
     var program = createProgramFromShaders(gl, vert_shader, frag_shader);
     gl.useProgram(program);
@@ -44,7 +44,7 @@ function main(){
 
     //Define Screen
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-    gl.clearColor(0,0,0,0)
+    gl.clearColor(1,1,1,1)
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     /****Make multiple draw calls with different random values in Buffer and Uniforms****/
