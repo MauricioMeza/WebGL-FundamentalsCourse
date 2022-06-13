@@ -76,17 +76,17 @@ function matIdentity(){
           0, 0, 1, 0,
           0, 0, 0, 1]
 }
-function matTrans3D(x, y, z){
-  return [1, 0, 0, 0,
-          0, 1, 0, 0,
-          0, 0, 1, 0,
-          x, y, z, 1]
+function matTrans3D(Tx, Ty, Tz){
+  return [1,  0,  0,  0,
+          0,  1,  0,  0,
+          0,  0,  1,  0,
+          Tx, Ty, Tz, 1]
 }
-function matScale3D(x, y, z){
-  return [x, 0, 0, 0,
-          0, y, 0, 0,
-          0, 0, z, 0,
-          0, 0, 0, 1]   
+function matScale3D(Sx, Sy, Sz){
+  return [Sx, 0,  0,  0,
+          0,  Sy, 0,  0,
+          0,  0,  Sz, 0,
+          0,  0,  0,  1]   
 }
 function matRotX3D(t){
   return [1,  0,  0,  0,
@@ -106,32 +106,34 @@ function matRotZ3D(t){
           0,  0,  1,  0,
           0,  0,  0,  1]   
 }
-function matPerspective(near, far, fov){
-  const aspct = 800 / 500;
+
+function matPerspective(nr, fr, fov){
+  const aspc = 800/500;
   var f = Math.tan(Math.PI * 0.5 - 0.5 * fov);
-  var rangeInv = 1.0 / (near - far);
-  return [f/aspct, 0, 0, 0,
-          0, f, 0, 0,
-          0, 0, (near+far)*rangeInv, -1,
-          0, 0,  near*far*rangeInv*2, 1]   
+  return [f/aspc, 0,   0,                  0,
+          0,      f,   0,                  0,
+          0,      0,   (nr+fr)/(nr-fr),   -1,
+          0,      0,   (nr*fr)/(nr-fr)*2,  1]   
 }
+
 function matPerspectiveAspect(near, far, fov, aspct){
   var f = Math.tan(Math.PI * 0.5 - 0.5 * fov);
   var rangeInv = 1.0 / (near - far);
   return [f/aspct, 0, 0, 0,
           0, f, 0, 0,
           0, 0, (near+far)*rangeInv, -1,
-          0, 0,  near*far*rangeInv*2, 1]   
+          0, 0, near*far*rangeInv*2, 0]   
 }
-function matFrustum(lft, rgt, top, btm, ner, far){
-  var dx = rgt - lft;
-  var dy = top - btm;
-  var dz = ner - far;
 
-  return [2*ner/dx, 0, 0, 0,
-          0, 2*ner/dy, 0, 0,
-          (lft+rgt)/dx, (top+btm)/dy, -(far+ner)/dz, -1,
-          0, 0, -2*ner/dz, 0]
+function matFrustum(l, r, b, t, nr, fr){
+  var dx = r - l;
+  var dy = t - b;
+  var dz = fr - nr;
+
+  return [2*nr/dx, 0, 0, 0,
+          0, 2*nr/dy, 0, 0,
+          (l+r)/dx, (t+b)/dy, -(fr+nr)/dz, -1,
+          0, 0, -2*nr*fr/dz, 0]
 }
 
 function getMatrix3DTransform(Tx, Ty, Tz, Sx, Sy, Sz, Rx, Ry, Rz){
@@ -149,14 +151,27 @@ function getMatrix3DTransform(Tx, Ty, Tz, Sx, Sy, Sz, Rx, Ry, Rz){
 }
 
 function getMatrix3DView(Tx, Ty, Tz, Rx, Ry, radio){
-  const Zoom = matTrans3D(0, 0, radio);
-  const Pan = matTrans3D(Tx, Ty, Tz);
   const RX = matRotX3D(Rx);
   const RY = matRotY3D(Ry);
+  const Zoom = matTrans3D(0, 0, radio);
+  const Pan = matTrans3D(Tx, Ty, Tz);
 
   var result = multiply4(RY, RX);
   result = multiply4(result, Zoom);
   result = multiply4(result, Pan);
+
+  return inverse(result);
+}
+
+function getMatrix3DViewFree(Tx, Ty, Tz, Rx, Ry, Rz){
+  const Trans = matTrans3D(Tx, Ty, Tz);
+  const RX = matRotX3D(Rx);
+  const RY = matRotY3D(Ry);
+  const RZ = matRotZ3D(Rz);
+
+  var result = multiply4(Trans, RX);
+  result = multiply4(result, RY);
+  result = multiply4(result, RZ);
 
   return inverse(result);
 }
@@ -399,36 +414,6 @@ function createF(x, y, width, height, thickness){
   return positions;
 }
 
-//Draw 3D F
-function create3Df(){
-  var positions = [
-      // left column
-      0.0,  0,  0,
-      0.1,  0,  0,
-      0.0, .5,  0,
-      0.0, .5,  0,
-      0.1,  0,  0,
-      0.1, .5,  0,
-
-      // top rung
-      .10,   0,  0,
-      .33,   0,  0,
-      .10,  .1,  0,
-      .10,  .1,  0,
-      .33,   0,  0,
-      .33,  .1,  0,
-
-      // middle rung
-      .10,  .2,  0,
-      .23,  .2,  0,
-      .10,  .3,  0,
-      .10,  .3,  0,
-      .23,  .2,  0,
-      .23,  .3,  0
-  ];
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
-  return positions.length/3;
-}
 function createFColors(){
   var positions = [
       // left column
@@ -458,6 +443,35 @@ function createFColors(){
   return positions;
 }
 
+//Draw 3D F
+function create3Df(){
+  var positions = [
+      0.0,  0,  0,
+      0.1,  0,  0,
+      0.0, .5,  0,
+
+      0.0, .5,  0,
+      0.1,  0,  0,
+      0.1, .5,  0,
+
+      .10,   0,  0,
+      .33,   0,  0,
+      .10,  .1,  0,
+
+      .10,  .1,  0,
+      .33,   0,  0,
+      .33,  .1,  0,
+
+      .10,  .2,  0,
+      .23,  .2,  0,
+      .10,  .3,  0,
+      
+      .10,  .3,  0,
+      .23,  .2,  0,
+      .23,  .3,  0];
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+  return positions.length/3;
+}
 
 function create3DF(){
   var positions = [
