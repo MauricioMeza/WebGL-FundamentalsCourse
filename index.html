@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WegbGL Tests</title>
+    <title>WebGL - Gráficos 3D en la Web</title>
     <style>
     body{
         background-color: thistle;
@@ -84,42 +84,53 @@
     </section>
     <section>
         <hr>
-        <h2>Dibujar un Triangulo - El "Hello World" de WebGL</h2>    
+        <h2>Dibujar un Triangulo - El "Hello World" de WebGL</h2> 
+        <canvas id="canvas_01" width="800" height="600"></canvas><br>
+        <h2>Multiples Triangulos</h2>
+        <canvas id="canvas_02" width="800" height="600"></canvas><br>
+        <h2>Triangulo con Color Buffer</h2>
+        <canvas id="canvas_03" width="800" height="600"></canvas><br>
+        <h2>Multiples Triangulos con Color Buffer</h2>
+        <canvas id="canvas_04" width="800" height="600"></canvas><br>
+        <h2>Figura a partir de Triangulos</h2>
+        <canvas id="canvas_06" width="800" height="600"></canvas><br>
+    </section>
+    <section>
+        <hr>
+        <h2>Figura con Matrices de Transformacion (Mover, Rotar, Escalar)</h2>
+        <canvas id="canvas_07" width="800" height="600"></canvas><br>
+        <h2>3D Proyeccion Ortografica</h2>
+        <canvas id="canvas_08" width="800" height="600"></canvas><br>
+        <h2>3D Proyeccion Perspectiva con Matriz de Perspectiva</h2>
+        <canvas id="canvas_09" width="800" height="600"></canvas><br>
+        <h2>Movimiento de Camara con Matriz de Vista</h2>
+        <canvas id="canvas_10" width="800" height="600"></canvas><br>
+        <h2>WebGL Animado (Rotacion de Objeto animada)</h2>
+        <canvas id="canvas_11" width="800" height="600"></canvas><br>
+    </section>
+    <section>
+        <hr>
+        <h2>Multiples Objetos</h2>
+        <canvas id="canvas_12" width="800" height="600"></canvas><br>
+        <h2>Multiples Tipos de Objetos Animados</h2>
+        <canvas id="canvas_14" width="800" height="600"></canvas><br>
+        <h2>Geometria con Texturas</h2>
+        <canvas id="canvas_15" width="800" height="600"></canvas><br>
+        <h2>Renderizacion a una Textura con FrameBuffer</h2>
+        <canvas id="canvas_16" width="800" height="600"></canvas><br>
+    </section>
+    <section>
+        <h2>Seleccion de Objetos con Mouse</h2>
+        <canvas id="canvas_17" width="800" height="600"></canvas><br>
     </section>
     
 
     
-    <canvas id="canvas_01" width="800" height="600"></canvas><br>
-    <h2>Multiples Triangulos</h2>
-    <canvas id="canvas_02" width="800" height="600"></canvas><br>
-    <h2>Triangulo con Color Buffer</h2>
-    <canvas id="canvas_03" width="800" height="600"></canvas><br>
-    <h2>Multiples Triangulos con Color Buffer</h2>
-    <canvas id="canvas_04" width="800" height="600"></canvas><br>
-    <h2>Rectangulo con Textura</h2>
-    <canvas id="canvas_05" width="800" height="600"></canvas>
-    <h2>Figura a partir de Triangulos</h2>
-    <canvas id="canvas_06" width="800" height="600"></canvas><br>
-    <h2>Figura con Matrices de Transformacion (Mover, Rotar, Escalar)</h2>
-    <canvas id="canvas_07" width="800" height="600"></canvas><br>
-    <h2>3D Proyeccion Ortografica</h2>
-    <canvas id="canvas_08" width="800" height="600"></canvas><br>
-    <h2>3D Proyeccion Perspectiva con Matriz de Perspectiva</h2>
-    <canvas id="canvas_09" width="800" height="600"></canvas><br>
-    <h2>Movimiento de Camara con Matriz de Vista</h2>
-    <canvas id="canvas_10" width="800" height="600"></canvas><br>
-    <h2>WebGL Animado (Rotacion de Objeto animada)</h2>
-    <canvas id="canvas_11" width="800" height="600"></canvas><br>
-    <h2>Multiples Objetos</h2>
-    <canvas id="canvas_12" width="800" height="600"></canvas><br>
-    <h2>Multiples Tipos de Objetos Animados</h2>
-    <canvas id="canvas_14" width="800" height="600"></canvas><br>
-    <h2>Geometria con Texturas</h2>
-    <canvas id="canvas_15" width="800" height="600"></canvas><br>
-    <h2>Renderizacion a una Textura con FrameBuffer</h2>
-    <canvas id="canvas_16" width="800" height="600"></canvas><br>
-    <h2>Seleccion de Objetos con Mouse</h2>
-    <canvas id="canvas_17" width="800" height="600"></canvas><br>
+    
+    
+    
+    
+    
 
     <script src="./my-utils.js"></script>
     <script src="./webgl-utils.js"></script>
