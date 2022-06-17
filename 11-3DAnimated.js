@@ -73,15 +73,15 @@ function main(){
     gl.enable(gl.DEPTH_TEST) 
     gl.enable(gl.CULL_FACE)
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+    gl.clearColor(1,1,1,1)
     
 
     var Ry = 0;
     requestAnimationFrame(anim);
     //Draw
     function anim(){
-        gl.clearColor(1,1,1,1)
-        gl.clear(gl.COLOR_BUFFER_BIT);
         Ry += 0.01;
+        gl.clear(gl.COLOR_BUFFER_BIT);
         drawF(gl, program, F.length/3, {x:0, y:0, z:0, sx:2, sy:2, sz:2, rx:0, ry:Ry, rz:3.1416});
         requestAnimationFrame(anim);
     }        
@@ -94,7 +94,7 @@ function drawF(gl, program, num, t){
     gl.uniformMatrix4fv(translateUniformLocation, false, transformMatrix);
 
     //Define View Matrix
-    const viewMatrix = getMatrix3DView(0, 0, 0,   -0.5, 1.2,  1+Math.cos(t.ry));
+    const viewMatrix = getMatrix3DView(0, 0, 0,   -0.5, 1.2,  5);
     var viewUniformLocation = gl.getUniformLocation(program, "u_matrix_view");
     gl.uniformMatrix4fv(viewUniformLocation, false, viewMatrix);
 

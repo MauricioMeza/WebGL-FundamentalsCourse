@@ -130,10 +130,10 @@ function matFrustum(l, r, b, t, nr, fr){
   var dy = t - b;
   var dz = fr - nr;
 
-  return [2*nr/dx, 0, 0, 0,
-          0, 2*nr/dy, 0, 0,
+  return [2*nr/dx,  0,        0,            0,
+          0,        2*nr/dy,  0,            0,
           (l+r)/dx, (t+b)/dy, -(fr+nr)/dz, -1,
-          0, 0, -2*nr*fr/dz, 0]
+          0,        0,        -2*nr*fr/dz, 0]
 }
 
 function getMatrix3DTransform(Tx, Ty, Tz, Sx, Sy, Sz, Rx, Ry, Rz){
