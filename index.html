@@ -16,6 +16,8 @@
         padding-right: 0;
         margin-left: auto;
         margin-right: auto;
+        margin-top: 50px;
+        margin-bottom: 8px;
         display: block;
     }
     p{
@@ -24,9 +26,12 @@
         text-align: justify;
         text-justify: inter-word;
     }
+    h2{
+        margin-top: 35px;
+    }
     code{
         text-align: center;
-        margin: 0vw 15vw;
+        margin: 0vw 15vw 500px 15vw;
     }
     #title{
         padding-top: 20px;
@@ -49,19 +54,22 @@
 </head>
 <body>
     <h1 id="title">Exploración de WebGL - Gráficos 3D en la Web</h1>
-    <h2>Informe final de pasantía para el profesor Jean Pierre Charalambos</h2>
+    <h1>Informe Final de Pasantía</h1>
     <h2 id="name">Mauricio Meza Burbano</h2>
     <h3 id="subname">Estudiante de Ingeniería de Sistemas - Universidad Nacional de Colombia</h3>
+    <h2 id="name">Jean Pierre Charalambos</h2>
+    <h3 id="subname">Profesor tutor</h3>
 
-    <p> La siguiente página presenta el informe final de mi exploración con la API WebGL (Web Graphics Library), esta tecnología fue lanzada en el 2012 y es utilizada por una gran cantidad de páginas, aplicaciones y experiencias web para dibujar gráficos 3D interactivos en el navegador sin necesidad de usar plug-ins, extensiones o programas externos. 
+    <p> La siguiente página presenta el informe final de mi exploración con la API WebGL (Web Graphics Library), esta tecnología fue lanzada en el 2012 y es utilizada por una gran cantidad de páginas y aplicaciones web para dibujar gráficos 3D interactivos en el navegador sin necesidad de usar plug-ins, extensiones o programas externos. 
         Durante mi pasantía en la empresa <a href="https://newrona.net/">Newrona</a> he utilizado esta tecnología para crear páginas web con componentes 3D haciendo uso de librerías de código abierto como <a href="https://threejs.org/">Three.js</a> y <a href="https://p5js.org/">P5.js</a>, estas librerías facilitan el desarrollo con WebGL abstrayendo las partes más complejas y verbosas de la API con componentes comunes del mundo digital 3D como luces, cámaras, materiales, escenas y muchos otros más.</p>
     <p> Gracias a estas librerías, dentro de mi pasantía no he encontrado una necesidad inmediata de adentrarme directamente en código de WebGL o manejar Shaders en lenguaje GLSL. Sin embargo, para entender a fondo esta tecnología, su funcionamiento, la mejor manera de usarla y desarrollar nuevas herramientas que faciliten su uso, es necesario comprender el código que corre “por detrás” y explorar la manera como WebGL realiza el proceso de renderizado desde el nivel más bajo, pixel por pixel.
-        Este acercamiento utiliza como guia principal la serie de articulos <a href="https://webglfundamentals.org/">WebGL Fundamentals</a> creado por Gregg Tavares, gran parte del código que se presenta a continuación proviene de esta guia y ha sido posteriormente modificado utilizando otros libros y referencias que se presentan al final, debido a que los artículos no tienen una versión en español espero que el contenido de esta página sea una introducción rápida a los temas que se presentan en él.
+        Este acercamiento utiliza como principal guia la serie de articulos / curso <a href="https://webglfundamentals.org/">WebGL Fundamentals</a> creado por Gregg Tavares, gran parte del código que se presenta a continuación proviene de esta guia y ha sido posteriormente modificado utilizando otros libros y referencias que se presentan al final, debido a que los artículos no tienen una versión en español espero que el contenido de esta página sea una introducción rápida a los temas que se presentan en él.
     </p>
+    <p> El codigo que genera los ejemplos puede ser encontrado y explorado en el siguiente <a href="https://github.com/MauricioMeza/WebGL-Tests">repositorio</a>, es posible que los ejemplos tengan problemas cargando en dispositivos moviles. Por esto recomiendo utilizar dispositivos de escritorio como PCs y Laptops.</a> </p>
     <section>
         <hr>
         <h2>¿Que es WebGL?</h2>
-        <p> WebGL es una librería de rasterizado que a nivel más simple está diseñada para dibujar líneas, puntos y triángulos sobre un Canvas de HTML, muchas aplicaciones incluso ignoran todas las funcionalidades de renderización 3D y lo utilizan solamente para generar y manipular gráficos en 2D, es por esto que todas las abstracciones comunes de los software de manipulación y renderización 3D como Objetos, Cámaras, Materiales, Luces y muchos otros de estos conceptos deben desarrollarse prácticamente desde cero con las herramientas que WebGL provee, esto se realiza al desglosar cada uno de estos componentes de un ambiente 3D en sus conceptos matemáticos más básicos como Vectores, Matrices y Escalares. 
+        <p> WebGL es una librería de rasterizado que a nivel más simple está diseñada para dibujar líneas, puntos y triángulos sobre un Canvas de HTML, muchas aplicaciones incluso ignoran todas sus funcionalidades de renderización 3D y lo utilizan solamente para generar y manipular gráficos en 2D, es por esto que todas las abstracciones comunes de los software de manipulación y renderización 3D como Objetos, Cámaras, Materiales, Luces y muchos otros de estos conceptos deben desarrollarse prácticamente desde cero con las herramientas que WebGL provee, esto se realiza al desglosar cada uno de estos componentes de un ambiente 3D en sus conceptos matemáticos más básicos como Vectores, Matrices y Escalares. 
             Al reducir la generación de gráficos a estos conceptos y operaciones del álgebra lineal, se convierte el proceso de renderización en instrucciones fácilmente computables y paralelizables de manera que puedan ser ejecutadas de una manera óptima por parte de la GPU.</p>    
         <img id="img-wgl" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/WebGL_Logo.svg/1920px-WebGL_Logo.svg.png">
     </section>
@@ -74,39 +82,149 @@
         <code>Implementacion de Shaders personalizados en Three.js (izquierda) y P5.js (derecha)</code>
         <p>Estas funciones también permiten definir desde JavaScript las diferentes variables como Uniforms, Attributtes, Varyings y Textures a través de las cuales se pasa información a los shaders. Cada una de estas variables tiene diferentes usos que se definen como:</p>
         <p><b> - Attributes:</b> Son principalmente utilizados para pasar información al Vertex Shader sobre los objetos a renderizar, esta información es definida como "arreglos de vectores" también conocidos como Buffers, de esta manera podemos cargar por ejemplo una lista de posiciones de vértices de una figura en coordenadas [X,Y,Z].</p>
-        <p><b> - Uniforms:</b> Son utilizadas para pasar variables a los shaders que serán iguales para cada vértice o pixel, estas variables pueden ser enteros, números de punto flotante, vectores o matrices.</p>
+        <p><b> - Uniforms:</b> Son utilizadas para pasar variables unicas a cualquiera de los shaders, de esta manera le enviaremos el mismo valor a cada vértice o pixel del objeto, estas variables pueden ser enteros, números de punto flotante, vectores o matrices.</p>
         <p><b> - Varyings:</b> Su principal función es pasar información del Vertex Shader al Fragment Shader, al definir un Varying con el mismo nombre en ambos shaders la información definida en un shader puede ser utilizada en el otro.</p>
         <p><b> - Textures:</b> Estas variables permiten pasar información de imágenes o "arreglos de píxeles" a los shaders.</p>
-        <p>Los Shaders en su definición más simple definen el proceso de pasar la información de posición de cada vértice al vertex shader (con la variable gl_Position), y la información de color al fragment shader (con la variable gl_FragColor), ambos como un vector de dimensión 4.</p>
+        <p>Los Shaders en su definición más simple describen el proceso de pasar la información de posición de cada vértice al vertex shader (con la variable gl_Position), y la información de color al fragment shader (con la variable gl_FragColor), ambos como un vector de dimensión 4.</p>
         <img src="./imgs/vertfrag.png"><br>
         <code>Vertex y Fragment Shaders mas simples</code>
 
     </section>
     <section>
         <hr>
-        <h2>Dibujar un Triangulo - El "Hello World" de WebGL</h2> 
-        <canvas id="canvas_01" width="800" height="600"></canvas><br>
-        <h2>Multiples Triangulos</h2>
-        <canvas id="canvas_02" width="800" height="600"></canvas><br>
-        <h2>Triangulo con Color Buffer</h2>
-        <canvas id="canvas_03" width="800" height="600"></canvas><br>
-        <h2>Multiples Triangulos con Color Buffer</h2>
-        <canvas id="canvas_04" width="800" height="600"></canvas><br>
-        <h2>Figura a partir de Triangulos</h2>
-        <canvas id="canvas_06" width="800" height="600"></canvas><br>
+        <h2>Dibujar un Triángulo - El "Hello World" de WebGL</h2> 
+        <p>Para dibujar un triángulo con los shaders definidos anteriormente debemos enviar como vectores [X,Y] las coordenadas de los 3 vértices que lo forman, esto se realiza a través de un buffer de manera que el vertex shader se ejecutara por cada vertice y recibira cada par de coordenadas como atributo. Posteriormente, es necesario enviar el color con el que se pintara cada pixel dentro del triángulo, para esto se define una variable uniforme que contenga un vector de dimensión 4 [R,G,B,A], este color será enviado al fragment shader que se ejecutara una vez por cada pixel en el canvas y detectara cuales pixeles se encuentran dentro del triángulo. </p>
+
+        <img src="./imgs/triangle.png"><br>
+        <code>Código de WebGL para dibujar un triángulo</code>
+
+        <canvas id="canvas_01" width="800" height="600"></canvas>
+        <code>Triángulo dibujado sobre un Canvas con WebGL</code>
+
+
+
+        <h2>Triángulo con Varios Colores - Color en el Buffer</h2>
+        <p> Los Buffers no son usados solamente para definir la posición de la geometría, también son capaces de guardar cualquier tipo información que se define por cada vértice. 
+            De esta manera podríamos crear otro buffer que guarde un color diferente para cada uno de los vértices del triángulo, para que este buffer sea utilizado es necesario declarar otro atributte en el vertex shader que reciba la información de color y posteriormente la envíe al fragment shader, el proceso de pasar información entre vertex y fragment se realiza declarando una variable Varying tanto en el vertex como en el fragment shader la cual siempre tendrá el mismo valor en ambos shaders. 
+            Con estos cambios el programa dibujará un triángulo que interpola los colores definidos dependiendo de la cercanía del pixel al vértice definido con ese color.
+        </p>
+
+        <img src="./imgs/colorBuffer.png"><br>
+        <code>Buffer de color y cambios en el vertex y fragment shader</code>
+
+        <canvas id="canvas_03" width="800" height="600"></canvas>
+        <code>Triángulo con colores interpolados</code>
+
+
+
+        <br><br><h2>Dibujar Varios Triángulos</h2>
+        <p>Si queremos dibujar más de un triángulo podemos encerrar gran parte del código que dibuja el triángulo dentro de un ciclo donde la posición de los vértices y los colores son definidos de manera aleatoria, esto significa que se llamara varias veces a la función drawArrays() también conocida como llamada de dibujo o draw call. Al hacer esto obtendremos una gran cantidad de triángulos en la pantalla</p>
+
+        <img src="./imgs/cycleTriangles.PNG"><br>
+        <code>Código de dibujo de triángulos en un ciclo</code>
+
+        <canvas id="canvas_02" width="800" height="600"></canvas>
+        <code>Múltiples triángulos con colores y posiciones aleatorias (cambia cada vez que se recargue la página)</code>
+
+
+
+        <h2>Múltiples Triángulos con Buffer de Color</h2>
+        <p> La Implementación anterior no es la única manera de dibujar varios triángulos en el canvas, por ejemplo al crear un buffer mucho más grande con más vértices que definan varios triángulos podemos obtener este mismo resultado, para esto utilizaremos el ejemplo del triángulo multicolor e igualmente utilizaremos un ciclo para crear los buffers posición y color con información aleatoria, se debe tener en cuenta definir el número total de vértices a la hora de llamar la función drawArrays().
+            Esta Implementación nos permite dibujar varios triángulos con una sola llamada de dibujo, en el mundo de los gráficos generalmente entre menos llamadas de dibujo realice un programa, este correra más rápido y será más óptimo</p>
+
+        <img src="./imgs/buffersTriangles.png"><br>
+        <code>Definición de arreglos que se guardan en los buffers</code>
+
+        <canvas id="canvas_04" width="800" height="600"></canvas>
+        <code>Múltiples triángulos multicolores en posiciones aleatorias (cambia cada vez que se recargue la página)</code>
+
+
+
+        <h2>Figura creadas a partir de Triángulos</h2>
+        <p>Siguiendo esta misma lógica, si en lugar de usar valores aleatorios dibujamos triángulos con posiciones y colores definidos podemos crear formas y figuras más complejas, casi todos los gráficos 3D que se presentan en videojuegos, animaciones y toda clase de rénder son formados en sus componentes más básicos por triángulos que definen una geometría.</p>
+
+        <img src="./imgs/f.png"><br>
+        <code>Letra f creada con un buffer de 6 triángulos (18 vértices)</code>
+
+        <canvas id="canvas_06" width="800" height="600"></canvas>
+        <code>Letra f en el canvas de WebGL</code>
     </section>
     <section>
         <hr>
-        <h2>Figura con Matrices de Transformacion (Mover, Rotar, Escalar)</h2>
-        <canvas id="canvas_07" width="800" height="600"></canvas><br>
-        <h2>3D Proyeccion Ortografica</h2>
-        <canvas id="canvas_08" width="800" height="600"></canvas><br>
-        <h2>3D Proyeccion Perspectiva con Matriz de Perspectiva</h2>
-        <canvas id="canvas_09" width="800" height="600"></canvas><br>
-        <h2>Movimiento de Camara con Matriz de Vista</h2>
-        <canvas id="canvas_10" width="800" height="600"></canvas><br>
-        <h2>WebGL Animado (Rotacion de Objeto animada)</h2>
-        <canvas id="canvas_11" width="800" height="600"></canvas><br>
+        <h2>Mover, Rotar y Escalar Objetos - Matrices de Transformación</h2>
+        <p> Con lo anterior ya podemos dibujar un objeto en WebGL definiendo la posición de cada uno de sus vértices, pero si queremos modificarlo o transformarlo de manera que cambie su posición, tamaño o dirección tendríamos que cambiar manualmente la información de cada vértice que dibuja la figura. 
+            Por suerte el álgebra lineal nos presenta una serie de operaciones matriciales que facilitan la transformación de vectores en el espacio, y como matemáticamente cada vértice es un vector en 3 dimensiones y cada figura es un conjunto de estos vectores, podemos aplicar estas operaciones a cada vértice para modificar el objeto completo.</p>
+        <p> Las 3 operaciones de transformación comunes en los programas de manipulación 3D son Translación, Rotación y Escalado, cada una de estas operaciones se debe realizar sobre el objeto en cada uno de sus ejes (X, Y, Z) por separado. 
+            Para que las operaciones matemáticas se realicen sobre cada vértice de la figura su implementación debe realizarse directamente en el Vertex Shader.</p>
+        
+        <p> La <b>Translación</b> (movimiento) se puede definir como una suma de vectores, creamos un vector que define el cambio de posición que queremos sobre cada eje [X, Y, Z], y lo sumamos a cada uno de los vértices del objeto, esto lo podemos definir fácilmente sobre el Vertex Shader al pasar este vector de translación como una uniforme y sumarlo al atributo de posición de cada vértice</p>
+        <p> El <b>Escalado</b> (cambio de tamaño) se puede definir como una multiplicación de vectores similar al producto punto del álgebra lineal sin la suma final, de esta manera se crea un vector que define cuanto crecerá el objeto en cada eje y lo multiplicamos sobre cada vértice del objeto.</p>
+        <img src="./imgs/trans+scale.PNG"><br>
+        <code>Implementacion de Escalado y Translacion sobre el vertex shader</code>
+
+
+        <p>La <b>Rotación</b> es un poco más compleja debido a que es necesario definir una operación separada para girar sobre cada eje, estas son definidas de mejor manera utilizando una matriz de rotación la cual es multiplicada con el vector de posición de cada vértice, al aplicarse esta multiplicación sobre cada vértice obtendremos una rotación del objeto sobre un eje específico por el valor de un ángulo tetha. Las 3 matrices se multiplican entre si para definir una sola matriz de rotación a la cual se le pasa un solo vector (Rx, Ry, Rz) como parámetro que define el ángulo de rotación en cada eje.</p>
+        <img src="./imgs/rots.png"><br>
+        <code>Matrices de Rotacion para cada eje</code>
+        
+        <p>Las operaciones de Translación y Escalado también pueden definirse como matrices gracias a la forma como se realiza la multiplicación de un vector (el vector de posición) por una matriz.</p>
+        <img src="./imgs/mats.png"><br>
+        <code>Matrices de Trasnlacion y Escalado</code>
+        
+        <p>De esta manera al tener las operaciones como matrices podemos finalmente multiplicar todas las 5 matrices para definir una sola Matriz de Transformación, esta recibe como parámetros el movimiento en [X,Y,Z], el escalado en [X,Y,Z] y la rotación en [X,Y,Z] realizando estas 3 transformaciones en una sola operación.</p>
+        <img src="./imgs/transform.PNG"><br>
+        <code>Vertex Shader con matriz de transformacion completa</code>
+        
+        <canvas id="canvas_07" width="800" height="600"></canvas>
+        <code>Figura despues de aplicar Translacion, Rotacion y Escalado</code>
+
+        <h2>Figuras en 3D - Proyección Ortográfica</h2>
+        <p>Por el momento solo hemos definido figuras y objetos utilizando vectores en 2 dimensiones, si queremos renderizar objetos en 3 dimensiones debemos definir la posición de sus vértices en 3 dimensiones [X,Y,Z]</p>
+        <img src="./imgs/3DF-Buffer.png"><br>
+        <code>Buffer de letra F en 3D creada con 96 vértices (32 triángulos) </code>
+        <p>Al pasar la información de los vértices en 3 dimensiones WebGL automáticamente procesa la información en el valor Z y proyecta el objeto con una vista ortográfica (sin perspectiva). Este proceso de rasterización internamente utiliza una matriz ortográfica que toma el vector en 3 dimensiones de cada vértice y lo convierte en un vector en 2 dimensiones que define su posición en la pantalla.</p>
+        <canvas id="canvas_08" width="800" height="600"></canvas>
+        <code>Letra F en 3D con proyección ortográfica</code>
+
+
+
+        <h2>Perspectiva - Proyección con Matriz de Perspectiva</h2>
+        <p>Si deseamos tener perspectiva se debe usar otra matriz que tome esta proyección y la modifique para presentar los objetos lejanos de manera más pequeña y los cercanos de manera más grande, esta matriz crea el tan conocido Frustum que recibe como parámetros el campo de visión (FOV) y los valores cercano y lejano para definir la pirámide de visión de la cámara perspectiva.</p>
+
+        <img src="./imgs/cam.png"><br>
+        <code>Matriz que define el Frustum de cámara Perspectiva, y diferencias entre proyección ortografica y perspectiva</code>
+
+        <p>Una vez definida esta matriz se pasa al vertex shader como una variable uniforme, de esta manera se multiplica junto con la matriz de transformación y el vector de posición para generar la proyección deseada.</p>
+        <canvas id="canvas_09" width="800" height="600"></canvas>
+        <code>Letra F en 3D con proyección perspectiva</code>
+
+
+
+        <h2>Movimiento de Cámara - Matriz de Vista</h2>
+        <p> Finalmente, para completar la configuración por defecto que la mayoría de ambientes 3D utilizan, se debe definir una cámara que sea capaz de moverse alrededor de la escena. 
+            Una de las sorpresas más grandes que me lleve haciendo esta investigación fue el hecho de que para WebGL no existe el concepto de cámara, la librería siempre renderizara él “cubo unitario” estático que tiene en frente y la única manera de “mover la cámara” es moviendo toda la geometría alrededor de ella y modificándola de manera que quede dentro de este cubo unitario. 
+            Por suerte no hay necesidad de definir nuevas matrices, el movimiento de la cámara se puede simular simplemente generando una matriz de movimiento que a través de los parámetros de translación defina la posición en la que se quiere colocar la cámara y también a través de los parámetros de rotación defina hacia donde está mirando la cámara, una vez tenemos esta matriz calculamos su inversa la cual se conoce como la matriz de Vista, esta matriz se la aplicamos a todos los vértices de la escena al multiplicarla con el resto de matrices en el Vertex Shader.
+        </p>
+        <img src="./imgs/transformFinal.PNG"><br>
+        <code>Vertex Shader final con las 3 matrices de Tranformación, Perspectiva y Vista</code>
+        <canvas id="canvas_10" width="800" height="600"></canvas>
+        <code>Varias Fs en 3D renderizadas con la cámara en una posición superior</code>
+
+        <p>Si queremos una cámara que simplemente tenga libre movimiento, podemos definir una matriz de movimiento que la mueva a cualquier punto pasando directamente los parámetros (Tx,Ty,Tz), para que posteriormente la haga girar alrededor de su eje pasando directamente los parámetros de rotación (Rx,Ry,Rz).</p>
+        <img src="./imgs/camMov.PNG"><br>
+        <code>Matriz de Vista generada a partir de 1 matriz de translación y 3 matrices de rotación</code>
+
+        <p>Pero si queremos generar una aproximación al método de navegación Orbit/Zoom/Pan podemos definir inicialmente la Orbita como una rotación solamente en los ejes X y Y para luego generar un Zoom a partir de un movimiento en el eje Z y finalizar con el Pan como un movimiento del punto central de pivote con una translación libre.</p>
+        <img src="./imgs/camMov2.PNG"><br>
+        <code>Matriz de Vista generada a partir de 2 matrices de translación y 2 matrices de rotación</code>
+
+        <h2>Objetos en Movimiento - Animación con WebGL</h2>
+        <p>Una vez tenemos la capacidad de transformar el objeto y la escena podemos animar estas transformaciones para visualizarlas de mejor manera, las animaciones en javascript requieren utilizar el metodo requestAnimationFrame() el cual nos permite ejecutar una función cada vez que el navegador dibuje un nuevo frame en la pantalla, así al definir una función que realice el dibujo de la escena podemos sucesivamente renderizarla múltiples veces por segundo con pequeños cambios en la posición del objeto o la cámara para dar la ilusión de movimiento.</p>
+        <p>Para esto crearemos una función que a través de las matrices presentadas anteriormente genere dinámicamente los cambios según el paso del tiempo, una vez se realicen las transformaciones haremos una llamada de dibujo con el metodo drawArrays() y finalmente realizaremos una petición al navegador para que vuelva a ejecutar la función de animación en el siguiente frame con el metodo requestAnimationFrame().</p>
+        <img src="./imgs/anim.PNG"><br>
+        <code>Función de animación con cambios matriz de transformación y vista</code>
+        <canvas id="canvas_11" width="800" height="600"></canvas>
+        <code>Animación de la escena con cambios en la rotación del objeto y el zoom de la cámara</code>
     </section>
     <section>
         <hr>

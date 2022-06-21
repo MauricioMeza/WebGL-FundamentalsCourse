@@ -77,28 +77,22 @@ function main(){
     
 
     var Ry = 0;
-    requestAnimationFrame(anim);
-    //Draw
-    function anim(){
+    requestAnimationFrame(animate);
+    
+    function animate(){
         Ry += 0.01;
-        gl.clear(gl.COLOR_BUFFER_BIT);
-        drawF(gl, program, F.length/3, {x:0, y:0, z:0, sx:2, sy:2, sz:2, rx:0, ry:Ry, rz:3.1416});
-        requestAnimationFrame(anim);
+        gl.clear(gl.COLOR_BUFFER_BIT);        
+        const transformMatrix = getMatrix3DTransform(0, 0, 0,   2, 2, 2,   0, Ry, 3.1416);
+        var translateUniformLocation = gl.getUniformLocation(program, "u_matrix_transform")
+        gl.uniformMatrix4fv(translateUniformLocation, false, transformMatrix);
+
+        //Define View Matrix
+        const viewMatrix = getMatrix3DView(0, 0, 0,   -0.5, 1.2,  2*Math.cos(Ry)+2);
+        var viewUniformLocation = gl.getUniformLocation(program, "u_matrix_view");
+        gl.uniformMatrix4fv(viewUniformLocation, false, viewMatrix);
+
+        gl.drawArrays(gl.TRIANGLES, 0, F.length/3)
+        requestAnimationFrame(animate);
     }        
 }
-
-function drawF(gl, program, num, t){
-    //Define Transformation Matrix
-    const transformMatrix = getMatrix3DTransform(t.x, t.y, t.z,   t.sx, t.sy, t.sz,   t.rx, t.ry, t.rz);
-    var translateUniformLocation = gl.getUniformLocation(program, "u_matrix_transform")
-    gl.uniformMatrix4fv(translateUniformLocation, false, transformMatrix);
-
-    //Define View Matrix
-    const viewMatrix = getMatrix3DView(0, 0, 0,   -0.5, 1.2,  5);
-    var viewUniformLocation = gl.getUniformLocation(program, "u_matrix_view");
-    gl.uniformMatrix4fv(viewUniformLocation, false, viewMatrix);
-
-    gl.drawArrays(gl.TRIANGLES, 0, num)
-}
-
 

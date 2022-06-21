@@ -49,23 +49,23 @@ function main(){
 
     /****Make multiple draw calls with different random values in Buffer and Uniforms****/
     for(var i=0; i<50; i++){
-        gl.uniform4f(colorUniformLocation, Math.random(), Math.random(), Math.random(), 1);
+        gl.uniform4fv(colorUniformLocation, [Math.random(), Math.random(), Math.random(), 1]);
+
         var positionBuffer = gl.createBuffer()
         gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
         var positions = [
-            rand(), rand(),
-            rand(), rand(),
-            rand(), rand()
+            random(), random(),
+            random(), random(),
+            random(), random()
         ];
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
         gl.enableVertexAttribArray(positionAttributeLocation);
         gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
     
-        //Draw
-        gl.drawArrays(gl.TRIANGLES, 0, 6)
+        gl.drawArrays(gl.TRIANGLES, 0, 3)
     }
 }
 
-function rand(){
+function random(){
     return (Math.random() * 2) -1;
 }

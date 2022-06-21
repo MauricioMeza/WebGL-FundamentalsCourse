@@ -13,7 +13,7 @@ vert_shader = glsl`
     void main() {
         v_color = a_color;
         vec2 translate =  a_position + u_translation;
-        vec2 scale = vec2(translate.x * u_scaling.x, translate.y * u_scaling.y);
+        vec2 scale = translate * u_scaling;
         vec2 rotate = vec2( scale.x * u_rotating.y + scale.y * u_rotating.x,
                             scale.y * u_rotating.y - scale.x * u_rotating.x);
         vec4 position = vec4(rotate, 0.0, 1.0);
@@ -30,10 +30,9 @@ frag_shader = glsl`
 precision mediump float;
      //Turn pixel into the uniform color
     uniform vec4 u_color; 
-    varying vec3 v_color;
 
     void main() {
-    gl_FragColor = vec4(v_color, 1.0); 
+    gl_FragColor = u_color; 
     }
 `;
 
@@ -50,13 +49,8 @@ function main(){
     gl.useProgram(program);
 
     //Create info buffer
-    var colorAttributeLocation = gl.getAttribLocation(program, "a_color")
-    var colorBuffer = gl.createBuffer()
-    gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-    const fCol = createFColors();
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(fCol), gl.STATIC_DRAW);  
-    gl.enableVertexAttribArray(colorAttributeLocation);
-    gl.vertexAttribPointer(colorAttributeLocation, 3, gl.FLOAT, false, 0, 0);
+    var colorUniformLocation = gl.getUniformLocation(program, "u_color")
+    gl.uniform4fv(colorUniformLocation, [1, 0, 0.5, 1])
 
     var positionAttributeLocation = gl.getAttribLocation(program, "a_position")
     var positionBuffer = gl.createBuffer()

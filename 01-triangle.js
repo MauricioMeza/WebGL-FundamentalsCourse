@@ -32,16 +32,18 @@ precision mediump float;
 main();
 //Main Function
 function main(){
-    //Get canvas, context and programs
+    //Cargar el canvas y los shaders
     var canvas = document.getElementById("canvas_01");
     var gl = canvas.getContext("webgl");
     var program = createProgramFromShaders(gl, vert_shader, frag_shader);
     gl.useProgram(program);
 
-    //Create info buffer
+    //Definir Uniforme de Color
     var colorUniformLocation = gl.getUniformLocation(program, "u_color")
+    gl.uniform4fv(colorUniformLocation, [1, 0, 0.5, 1]);
+
+    //Definir Buffer de Coordenadas
     var positionAttributeLocation = gl.getAttribLocation(program, "a_position")
-    gl.uniform4f(colorUniformLocation, 1, 0, 0.5, 1);
     var positionBuffer = gl.createBuffer()
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
     var positions = [
@@ -53,12 +55,12 @@ function main(){
     gl.enableVertexAttribArray(positionAttributeLocation);
     gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
     
-    //Deifine Screen
+    //Definir propiedades de la pantalla
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     gl.clearColor(1,1,1,1)
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-    //Draw
+    //Dibujar en modo triangulos con 3 vertices
     gl.drawArrays(gl.TRIANGLES, 0, 3)
 }
 

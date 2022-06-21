@@ -21,7 +21,7 @@ frag_shader = glsl`
 
 precision mediump float;
     //Turn pixel into the uniform color
-    varying vec4 v_color; 
+    varying vec4 v_color;
 
     void main() {
         gl_FragColor = v_color; 
