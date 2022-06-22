@@ -996,3 +996,7 @@ function create3DCubeTexCoords(){
   ];
   return texCoords
 }
+
+function random(){
+  return (2*Math.random())-1
+}

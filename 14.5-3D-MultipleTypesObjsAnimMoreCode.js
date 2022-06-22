@@ -48,8 +48,8 @@ function main(){
     
     //---OBJECTS TO DRAW---
     //Define Attribute Locations
-    var positionAttributeLocation = gl.getAttribLocation(program, "a_position")
-    var colorAttributeLocation = gl.getAttribLocation(program, "a_color")
+    var positionAttributeLocation = gl.getAttribLocation(program, "a_position");
+    var colorAttributeLocation = gl.getAttribLocation(program, "a_color");
     
     //Define Buffers
     var cubePosBuffer = gl.createBuffer()
@@ -72,9 +72,9 @@ function main(){
     var objs = []
     for(var i=0; i<15; i++){
         objs.push({
-            bufferPos: cubePosBuffer, 
-            bufferCol: cubeColBuffer,
-            count: create3DF().length,
+            geometryBuffer: cubePosBuffer, 
+            colorBuffer: cubeColBuffer,
+            vertCount: create3DF().length,
             uniforms: {
                 u_matrix_transform: matIdentity()
             },
@@ -83,9 +83,9 @@ function main(){
             mults: {x: 2*Math.random(), y:2*Math.random() }
         })
         objs.push({
-            bufferPos: fPosBuffer, 
-            bufferCol: fColBuffer, 
-            count: create3DCube().length,
+            geometryBuffer: fPosBuffer, 
+            colorBuffer: fColBuffer, 
+            vertCount: create3DCube().length,
             uniforms: {
                 u_matrix_transform: matIdentity()
             },
@@ -94,6 +94,22 @@ function main(){
             mults: {x: 2*Math.random(), y:2*Math.random() }
         })
     }
+
+    /*
+    objects = [];
+    obj = {
+        geometryBuffer: geoBuffer,
+        colorBuffer: colBuffer,
+        pos: {x:0, y:0, z:0},
+        rot: {x:0, y:0, z:0},
+        scl: {x:0, y:0, z:0},
+        uniforms:{
+            u_matrix_transform: identy(),
+            u_color: 0x00000
+        }
+    }
+    objects.append(obj)
+    */
 
     //Define Perspective and View Matrices
     const perspectiveMatrix = getMatrix3DPerspective(0.01, 100, 0.85);
@@ -120,11 +136,11 @@ function main(){
             obj.rot.y += 0.01 * obj.mults.y;
 
             //Setup obj attributes
-            gl.bindBuffer(gl.ARRAY_BUFFER, obj.bufferPos);
+            gl.bindBuffer(gl.ARRAY_BUFFER, obj.geometryBuffer);
             gl.enableVertexAttribArray(positionAttributeLocation);
             gl.vertexAttribPointer(positionAttributeLocation, 3, gl.FLOAT, false, 0, 0); 
 
-            gl.bindBuffer(gl.ARRAY_BUFFER, obj.bufferCol);
+            gl.bindBuffer(gl.ARRAY_BUFFER, obj.colorBuffer);
             gl.enableVertexAttribArray(colorAttributeLocation);
             gl.vertexAttribPointer(colorAttributeLocation, 3, gl.FLOAT, false, 0, 0);
             
@@ -137,7 +153,7 @@ function main(){
             gl.uniformMatrix4fv(transUniformLocation, false, obj.uniforms.u_matrix_transform);
 
             //draw obj from local and universal attributes/uniforms
-            gl.drawArrays(gl.TRIANGLES, 0, obj.count)
+            gl.drawArrays(gl.TRIANGLES, 0, obj.vertCount)
         })
         requestAnimationFrame(draw);
     }

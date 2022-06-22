@@ -228,8 +228,20 @@
     </section>
     <section>
         <hr>
-        <h2>Multiples Objetos</h2>
+        <h2>Multiples Objetos Animados</h2>
+        <p>Antriormente hemos visto que para dibujar varios objetos dentro del mismo entorno podemos definir todos los vértices de todos los objetos dentro del mismo buffer de geometría, o tambien podemos usar múltiples llamados de dibujo con el mismo buffer aplicando cambios en cada uno de los objetos con diferentes matrices de movimiento. Sin embargo, para WebGL no existe ninguna diferencia entre estos objetos, la librería no guarda ninguna referencia con respecto a su posición, buffer de geometría, color o cualquier otra información de cada objeto, por esta razón para fácilmente dibujar y manipular varios objetos es necesario definir una variable que almacene en formato JSON la información de cada uno de los objetos 3D como el buffer que define su geometría, color, numero de vertices, posición, textura y cualquier otra propiedad que pueda ser únicamente de ese objeto.</p>
+        <img src="./imgs/objs.png"><br>
+        <code>Declaracion de cada Objeto 3D y sus propiedades con información definida y aleatoria.</code>
+        
+        <p>De esta manera, cada objeto que renderizamos podrá ser fácilmente referenciado e identificado en cada llamada de dibujo, para dibujarlos simplemente guardamos todos los objetos en un mismo arreglo y los dibujamos iterativamente en un ciclo, cada iteración entonces define los buffers y uniformes de cada objeto por separado y utiliza un solo draw call por cada objeto.</p>
+        <img src="./imgs/objsCycle.PNG"><br>
+        <code>Objetos renderizados en un ciclo cada frame con sus atributos y uniformes propios</code>
+        
         <canvas id="canvas_12" width="800" height="600"></canvas><br>
+        <code>Varias Fs en 3D animadas en un mismo entorno</code>
+
+
+
         <h2>Multiples Tipos de Objetos Animados</h2>
         <canvas id="canvas_14" width="800" height="600"></canvas><br>
         <h2>Geometria con Texturas</h2>
@@ -253,19 +265,18 @@
     <script src="./my-utils.js"></script>
     <script src="./webgl-utils.js"></script>
     
-    <script src="./01-triangle.js"></script>
-    <script src="./02-randomTriangles.js"></script>
-    <script src="./03-vertexTriangle.js"></script>
-    <script src="./04-randomVertexTrianglesWithBuffers.js"></script>
-    <script src="./05-RectangleWithTexture.js"></script>
-    <script src="./06-MovRotScaleF.js"></script>
+    <script src="./01-triangulo.js"></script>
+    <script src="./02-trianguloColores.js"></script>
+    <script src="./03-variosTriangulos.js"></script>
+    <script src="./04-variosTriangulosColores.js"></script>
+    <script src="./05-FiguraFConTranformacionVectorial.js"></script>
     <script src="./07-MovRotScaleMatrixF.js"></script>
     <script src="./08-3DIntroductionOrtho.js"></script>
     <script src="./09-3DPerspective.js"></script>
     <script src="./10-3DCameraView.js"></script>
     <script src="./11-3DAnimated.js"></script>
-    <script src="./13-3D-MultipleObjs.js"></script>
-    <script src="./14.75-3D-MultipleTypesObjsAnimMoreCode.js"></script>
+    <script src="./13.5-3D-MultipleObjsAnimMoreCode.js"></script>
+    <script src="./14.5-3D-MultipleTypesObjsAnimMoreCode.js"></script>
     <script src="./15-3DTextureAnimated.js"></script>
     <script src="./17-3DRenderToTextureDepth.js"></script>
     <script src="./18-PICKING.js"></script>

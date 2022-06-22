@@ -3,7 +3,6 @@
 //-------------------------------------
 const glsl = x => x;
 var vert_shader = glsl`
-    //receive data from Buffer into gl_position (pos of current vertex)
     attribute vec4 a_position;
  
     void main() {
@@ -16,9 +15,7 @@ var vert_shader = glsl`
 //----------FragmentShader-------------
 //-------------------------------------
 var frag_shader = glsl`
-
-precision mediump float;
-     //Turn pixel into the uniform color
+    precision mediump float;
     uniform vec4 u_color; 
 
     void main() {
