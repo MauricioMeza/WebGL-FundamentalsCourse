@@ -228,24 +228,48 @@
     </section>
     <section>
         <hr>
-        <h2>Multiples Objetos Animados</h2>
-        <p>Antriormente hemos visto que para dibujar varios objetos dentro del mismo entorno podemos definir todos los vértices de todos los objetos dentro del mismo buffer de geometría, o tambien podemos usar múltiples llamados de dibujo con el mismo buffer aplicando cambios en cada uno de los objetos con diferentes matrices de movimiento. Sin embargo, para WebGL no existe ninguna diferencia entre estos objetos, la librería no guarda ninguna referencia con respecto a su posición, buffer de geometría, color o cualquier otra información de cada objeto, por esta razón para fácilmente dibujar y manipular varios objetos es necesario definir una variable que almacene en formato JSON la información de cada uno de los objetos 3D como el buffer que define su geometría, color, numero de vertices, posición, textura y cualquier otra propiedad que pueda ser únicamente de ese objeto.</p>
+        <h2>Múltiples Objetos Animados</h2>
+        <p>Anteriormente hemos visto que para dibujar varios objetos dentro del mismo entorno podemos definir todos los vértices de todos los objetos dentro del mismo buffer de geometría, o también podemos usar múltiples llamados de dibujo con el mismo buffer aplicando cambios en cada uno de los objetos con diferentes matrices de movimiento. Sin embargo, para WebGL no existe ninguna diferencia entre estos objetos, la librería no guarda ninguna referencia con respecto a su posición, buffer de geometría, color o cualquier otra información de cada objeto, por esta razón para fácilmente dibujar y manipular varios objetos es necesario definir una variable que almacene en formato JSON la información de cada uno de los objetos 3D como el buffer que define su geometría, color, numero de vértices, posición, textura y cualquier otra propiedad que pueda ser únicamente de ese objeto.</p>
         <img src="./imgs/objs.png"><br>
-        <code>Declaracion de cada Objeto 3D y sus propiedades con información definida y aleatoria.</code>
-        
+        <code>Declaración de cada Objeto 3D y sus propiedades con información definida y aleatoria.</code>
+
         <p>De esta manera, cada objeto que renderizamos podrá ser fácilmente referenciado e identificado en cada llamada de dibujo, para dibujarlos simplemente guardamos todos los objetos en un mismo arreglo y los dibujamos iterativamente en un ciclo, cada iteración entonces define los buffers y uniformes de cada objeto por separado y utiliza un solo draw call por cada objeto.</p>
         <img src="./imgs/objsCycle.PNG"><br>
-        <code>Objetos renderizados en un ciclo cada frame con sus atributos y uniformes propios</code>
-        
-        <canvas id="canvas_12" width="800" height="600"></canvas><br>
+        <code>Objetos renderizados en un ciclo con sus atributos y uniformes propios</code>
+
+        <canvas id="canvas_12" width="800" height="600"></canvas>
         <code>Varias Fs en 3D animadas en un mismo entorno</code>
 
 
 
-        <h2>Multiples Tipos de Objetos Animados</h2>
-        <canvas id="canvas_14" width="800" height="600"></canvas><br>
-        <h2>Geometria con Texturas</h2>
+        <h2>Múltiples Tipos de Objetos Animados</h2>
+        <p>Lo anterior nos permite definir la información de cada objeto por separado, esto no solo nos ayuda a dibujar múltiples objetos en diferentes posiciones, también podemos dibujar objetos con diferentes geometrías, colores y cualquier otra propiedad única que guardemos de estos.</p>
+        <img src="./imgs/tiposObjs.png"><br>
+        <code>Declaramos y utilizamos diferentes Buffers de Geometria y Color para los Objetos</code>
+
+        <canvas id="canvas_14" width="800" height="600"></canvas>
+        <code>Varios tipos de Objetos 3D animados en un mismo entorno</code>
+
+
+
+        <h2>Geometría con Texturas</h2>
+        <p> Si en lugar de colores planos deseamos usar imágenes mapeadas sobre los objetos, es necesario definirlas y enviarlas a los shaders utilizando un tipo de variable especial llamada Texture, esta variable puede recibir cualquier tipo de "Arreglo de Píxeles" ya sea una imagen cargada o generada en código.</p>
+        <img src="./imgs/texture.PNG"><br>
+        <code>Creación de una variable de textura</code>
+
+        <p>Posteriormente para proyectarlas sobre la geometría de un objeto es necesario definir las coordenadas de la textura como un vector en 2 dimensiones que define la posición de cada vértice sobre la imagen, esta información es conocida como las coordenadas UV del objeto y pueden ser definidas dentro de un buffer.</p>
+        <img src="./imgs/bufferUV.PNG"><br>
+        <code>Buffer con las coordenadas UV del objeto</code>
+
+        <p>Finalmente, la información de la textura y de las coordenadas UV son empleadas para mapear la imagen encima de la geometría dentro del Fragment Shader.</p>
+        <img src="./imgs/textureShader.PNG"><br>
+        <code>Fragment shader que recibe la textura y la mapea sobre el objeto usando las coordenadas UV</code>
+
         <canvas id="canvas_15" width="800" height="600"></canvas><br>
+        <code>Objeto 3D con textura mapeada sobre su geometría</code>
+
+
+
         <h2>Renderizacion a una Textura con FrameBuffer</h2>
         <canvas id="canvas_16" width="800" height="600"></canvas><br>
     </section>
@@ -275,9 +299,9 @@
     <script src="./08-3DPerspectivo.js"></script>
     <script src="./09-3DVistaCamara.js"></script>
     <script src="./10-3DAnimado.js"></script>
-    <script src="./13.5-3D-MultipleObjsAnimMoreCode.js"></script>
-    <script src="./14.5-3D-MultipleTypesObjsAnimMoreCode.js"></script>
-    <script src="./15-3DTextureAnimated.js"></script>
+    <script src="./11-3DMultiplesObjetosAnimados.js"></script>
+    <script src="./12-3DMultiplesTiposdeObjetosAnimados.js"></script>
+    <script src="./13-3DTexturaAnimada.js"></script>
     <script src="./17-3DRenderToTextureDepth.js"></script>
     <script src="./18-PICKING.js"></script>
 </body>

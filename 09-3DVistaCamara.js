@@ -35,8 +35,6 @@ precision mediump float;
 //----------WebGL_JS_Code-------------
 //-------------------------------------
 main();
-
-
 //Main Function
 function main(){
     //Cargar el canvas y los shaders
