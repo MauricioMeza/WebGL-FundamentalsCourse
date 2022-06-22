@@ -6,12 +6,13 @@ vert_shader = glsl`
     attribute vec4 a_position;
     attribute vec4 a_color;
     uniform mat4 u_matrix_perspective;
+    uniform mat4 u_matrix_view;
     uniform mat4 u_matrix_transform;
     varying vec4 v_color;
 
     void main() {
         v_color = a_color;
-        gl_Position = u_matrix_perspective * u_matrix_transform * a_position;
+        gl_Position = u_matrix_perspective * u_matrix_view * u_matrix_transform * a_position;
     }
 
 `;
@@ -38,49 +39,63 @@ main();
 
 //Main Function
 function main(){
-    //Get canvas, context and programs
-    var canvas = document.getElementById("canvas_09");
+    //Cargar el canvas y los shaders
+    var canvas = document.getElementById("canvas_10");
     var gl = canvas.getContext("webgl");
     var program = createProgramFromShaders(gl, vert_shader, frag_shader);
     gl.useProgram(program);
 
-    //Create info buffer
+    //Crear Buffer de Color con Colores definidos para cada cara de la geometria
     var colorAttributeLocation = gl.getAttribLocation(program, "a_color")
     var colorBuffer = gl.createBuffer()
     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer)
-    const cols = create3DFColors();
+    const cols = create3DFColors(gl);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cols), gl.STATIC_DRAW);
     gl.enableVertexAttribArray(colorAttributeLocation);
     gl.vertexAttribPointer(colorAttributeLocation, 3, gl.FLOAT, false, 0, 0)
     
+    //Crear Buffer de Geometria con coordenadas definidas en 3D
     var positionAttributeLocation = gl.getAttribLocation(program, "a_position")
     var positionBuffer = gl.createBuffer()
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-    const F = create3DF();  
+    const F = create3DF(gl);  
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(F), gl.STATIC_DRAW);
     gl.enableVertexAttribArray(positionAttributeLocation);
     gl.vertexAttribPointer(positionAttributeLocation, 3, gl.FLOAT, false, 0, 0);
 
-    //Define perspective Matrix
-    const perspectiveMatrix = getMatrix3DPerspective(0.01, 100, 1);
+    //Crear Uniforme con Matriz de Perspectiva (Near, Far, FOV)
+    const perspectiveMatrix = getMatrix3DPerspective(0.01, 100, 0.85);
     var perspectiveUniformLocation = gl.getUniformLocation(program, "u_matrix_perspective")
     gl.uniformMatrix4fv(perspectiveUniformLocation, false, perspectiveMatrix);
+
+    //Crear Uniforme con Matriz de Vista (Tx,Ty,Tz,  Rx,Ry  Zoom)
+    const viewMatrix = getMatrix3DView(0, 0, 0,   -0.5, 1.2,  2);
+    var viewUniformLocation = gl.getUniformLocation(program, "u_matrix_view");
+    gl.uniformMatrix4fv(viewUniformLocation, false, viewMatrix);
     
-    //Deifine Screen
+    
+    //Definir Propiedades de la Pantalla y Modo de Renderizacion
     gl.enable(gl.DEPTH_TEST) 
     gl.enable(gl.CULL_FACE)
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     gl.clearColor(1,1,1,1)
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-    //Draw
-    draw(gl, program, F.length/3, {x:0, y:.1, z:-0.5, sx:1, sy:1, sz:1, rx:0, ry:2.5, rz:3.1416});
-}
+    const numFs = 8;
+    const radius = 1;
+    //Dibujar varias Fs en posiciones diferentes alrededor de un circulo
+    for( var i=0; i<numFs; i++){
+        var angle = i * Math.PI * 2 / numFs;
+        var x = Math.cos(angle) * radius;
+        var y = Math.sin(angle) * radius;
 
-function draw(gl, program, num, t){
-    const transformMatrix = getMatrix3DTransform(t.x, t.y, t.z,   t.sx, t.sy, t.sz,   t.rx, t.ry, t.rz);
-    var translateUniformLocation = gl.getUniformLocation(program, "u_matrix_transform")
-    gl.uniformMatrix4fv(translateUniformLocation, false, transformMatrix);
+        //Crear Varias Uniformes con Matriz de Tranformacion Diferentes (Tx,Ty,Tz  Sx,Sy,Sz  Rx,Ry,Rz)
+        const transformMatrix = getMatrix3DTransform(x, 0, y,   1, 1, 1,   0, 1.57, 3.14);
+        var translateUniformLocation = gl.getUniformLocation(program, "u_matrix_transform")
+        gl.uniformMatrix4fv(translateUniformLocation, false, transformMatrix);
 
-    gl.drawArrays(gl.TRIANGLES, 0, num)
+        //Llamada de Dibujo por cada Objeto 3D
+        gl.drawArrays(gl.TRIANGLES, 0, F.length/3)
+    }
+    
 }
