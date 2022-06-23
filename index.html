@@ -292,6 +292,16 @@
     </section>
     <section>
         <h2>Seleccion de Objetos con Mouse</h2>
+        <p> Para finzalizar utilizaremos los conceptos aprendidos anteriormente para desarrollar una funcionalidad de picking o seleccion de objetos con el mouse, esta funcionalidad es muy utilizada e importante dentro de la interaccion en espacios tridimiensionales y su implementación sintetiza una gran parte de las ideas exploradas.</p>
+        <p> La implementación utiliza una tecnica que consiste en renderizar la escena 2 veces, el primer rénder se realiza sobre él canvas con la configuración del fragment shader que se desea presentar al usuario, una segunda renderización se hace sobre una textura invisible la cual utiliza un fragment shader muy simple que pinta cada objeto de un color especifico, este color esta predefinido según el ID del objeto por lo que cada objeto esta pintado de un color diferente. 
+            Si rastreamos la posicion del mouse y leemos el color del pixel sobre el que se encuentra actualmente podemos usar esta informacion para obtener el ID del objeto y a partir de esto referenciarlo en la lista de objetos.</p>
+        <p>Para desarrollar esto necesitamos definir 2 programas de WebGL, uno con la configuración necesaria para renderizar la escena y otro con un fragment shader muy simple que reciba un color como uniforme de manera que pinte todo el objeto de este color.</p>
+        <img src="./imgs/pickerShader.PNG"><br>
+        <code>Fragment Shader que pinta el objeto de un color</code>
+
+        <p>Definimos una textura sobre la cual renderizaremos la escena utilizando un FrameBuffer y definimos un RenderBuffer que nos permita utilizar la información del mapa de profundidad generado por WebGL para siempre seleccionar el primer objeto visible. </p>
+        <img src="./imgs/pickerBuffer.PNG"><br>
+        <code>Textura, Render Buffer y Frame Buffer para renderizar la escena fuera del canvas</code>
         <canvas id="canvas_17" width="800" height="600"></canvas><br>
     </section>
     

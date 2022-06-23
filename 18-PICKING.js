@@ -54,7 +54,7 @@ const frag_shader_picker = glsl`
 main();
 
 function main(){
-    //--------CANVAS, GL-CONTEXT, MOUSE, SCREEN--------
+    //Cargar el canvas y los shaders
     var canvas = document.getElementById("canvas_17");
     var gl = canvas.getContext("webgl");
     var program = createProgramFromShaders(gl, vert_shader, frag_shader);
@@ -64,7 +64,7 @@ function main(){
     var h = gl.canvas.height;
     const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
 
-    //Mouse Interaction
+    //Interaccion del Mouse
     let mouseX = -1;
     let mouseY = -1;
     gl.canvas.addEventListener('mousemove', (e) => {
@@ -112,12 +112,12 @@ function main(){
     }
 
     //------- OBJECTS TO DRAW --------
-    //Define Attribute Locations
+    //Definir Atributos
     var positionAttributeLocation = gl.getAttribLocation(program, "a_position")
     var positionAttributeLocation = gl.getAttribLocation(programPicker, "a_position")
     var colorAttributeLocation = gl.getAttribLocation(program, "a_color")
     
-    //Define Buffers
+    //Definir Buffers
     var cubePosBuffer = gl.createBuffer()
     gl.bindBuffer(gl.ARRAY_BUFFER, cubePosBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(create3DCube()), gl.STATIC_DRAW);
@@ -134,7 +134,7 @@ function main(){
     gl.bindBuffer(gl.ARRAY_BUFFER, fColBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(create3DFColors()), gl.STATIC_DRAW);
 
-    //Define objects
+    //Definir Objetos
     var objs = []
     for(var i=0; i<15; i++){
         const id1 = (i*2)+1
@@ -184,7 +184,7 @@ function main(){
     var ry = 1.2;
     const viewMatrix = getMatrix3DView(x, y, z,   rx, ry,  zoom);
 
-    //------- DEFINE TEXTURE BUFFER -------
+    //Textura sobre la cual guardaremos el render de la escena
     var targetTexture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, targetTexture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
@@ -192,9 +192,11 @@ function main(){
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
+    //Frame Buffer para renderizar sobre textura
     var frameBuffer = gl.createFramebuffer();
     gl.bindFramebuffer(gl.FRAMEBUFFER, frameBuffer);
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, targetTexture, 0);
+    //Render Buffer para usar la informacion de profundidad
     var depthBuffer = gl.createRenderbuffer();
     gl.bindRenderbuffer(gl.RENDERBUFFER, depthBuffer);
     gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, w, h);
