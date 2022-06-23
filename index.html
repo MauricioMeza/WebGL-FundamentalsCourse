@@ -167,7 +167,7 @@
         <img src="./imgs/rots.png"><br>
         <code>Matrices de Rotacion para cada eje</code>
         
-        <p>Las operaciones de Translación y Escalado también pueden definirse como matrices gracias a la forma como se realiza la multiplicación de un vector (el vector de posición) por una matriz.</p>
+        <p>Las operaciones de Translación y Escalado también pueden definirse como matrices gracias a la forma como se realiza la multiplicación de un vector por una matriz.</p>
         <img src="./imgs/mats.png"><br>
         <code>Matrices de Trasnlacion y Escalado</code>
         
@@ -265,13 +265,30 @@
         <img src="./imgs/textureShader.PNG"><br>
         <code>Fragment shader que recibe la textura y la mapea sobre el objeto usando las coordenadas UV</code>
 
-        <canvas id="canvas_15" width="800" height="600"></canvas><br>
+        <canvas id="canvas_15" width="800" height="600"></canvas>
         <code>Objeto 3D con textura mapeada sobre su geometría</code>
 
 
+        <h2>Renderización a una Textura con FrameBuffer</h2>
+        <p> Las texturas definidas en WebGL pueden ser imágenes cargadas como elementos de HTML (como en el anterior ejemplo) o también pueden ser generadas dinámicamente dentro de JavaScript, este tipo de texturas dinámicas nos permiten calcular información de la escena y reutilizarla dentro de esta misma para ayudar con diferentes tipos de funcionalidades.
+            Un ejemplo de esto es la capacidad de renderizar una escena dentro de una textura que posteriormente puede ser mapeada dentro de otro objeto, para hacer esto declaramos inicialmente una textura cuyo valor será vacío por el momento.
+        </p>
+        <img src="./imgs/targetTex.png"><br>
+        <code>Textura vacia donde se renderizara la escena</code>
 
-        <h2>Renderizacion a una Textura con FrameBuffer</h2>
-        <canvas id="canvas_16" width="800" height="600"></canvas><br>
+        <p> A continuación crearemos un Frame Buffer el cual es un objeto donde se puede renderizar una escena, por defecto WebGL utiliza un frame buffer que renderiza sobre el Canvas y al crear otro frame buffer configurado a una textura evitamos que se renderice sobre el Canvas y nos aseguramos de que el render se realice sobre esta textura
+        </p>
+        <img src="./imgs/frameBuffer.PNG"><br>
+        <code>Frame Buffer configurado con la textura anterior</code>
+
+        <p> Finalmente, debemos renderizar la escena 2 veces, la primera se realizará sobre el render buffer declarado por nosotros y utilizando como textura de la geometría una imagen cargada anteriormente. 
+            Y posteriormente renderizamos una segunda vez declarando el frame buffer vacio lo cual renderizara por defecto al canvas y utilizando como textura de la geometría la imagen generada por el render anterior.
+        </p>
+        <img src="./imgs/drawBuffer.PNG"><br>
+        <code>Renderizacion de la escena 2 veces sobre Buffer y Canvas</code>
+
+        <canvas id="canvas_16" width="800" height="600"></canvas>
+        <code>Escena de 3 cubos con textura del render de 3 cubos con textura de imagen</code>
     </section>
     <section>
         <h2>Seleccion de Objetos con Mouse</h2>
