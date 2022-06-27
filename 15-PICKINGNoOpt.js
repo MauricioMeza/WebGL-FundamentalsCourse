@@ -96,7 +96,7 @@ function main(){
         if (id > 0) {
             const pickNdx = id - 1;
             oldPickNdx = pickNdx;
-            objs[pickNdx].colorMult = [1,1,0,1];
+            objs[pickNdx].colorMult = [1,0,0,1];
             canvas.style.cursor = "pointer";
         }
     }

@@ -271,19 +271,16 @@
 
         <h2>Renderización a una Textura con FrameBuffer</h2>
         <p> Las texturas definidas en WebGL pueden ser imágenes cargadas como elementos de HTML (como en el anterior ejemplo) o también pueden ser generadas dinámicamente dentro de JavaScript, este tipo de texturas dinámicas nos permiten calcular información de la escena para reutilizarla dentro de esta misma lo cual puede ayudar con el desarrollo de diferentes tipos de funcionalidades.
-            Un ejemplo de esto es la capacidad de renderizar una escena dentro de una textura que posteriormente puede ser mapeada sobre un objeto, para hacer esto declaramos inicialmente una textura cuyo valor será vacío por el momento.
-        </p>
+            Un ejemplo de esto es la capacidad de renderizar una escena dentro de una textura que posteriormente puede ser mapeada sobre un objeto, para hacer esto declaramos inicialmente una textura cuyo valor será vacío por el momento.</p>
         <img src="./imgs/targetTex.png"><br>
         <code>Textura vacia donde se renderizara la escena</code>
 
-        <p> A continuación crearemos un Frame Buffer, este buffer es un objeto utilizado para definir donde se renderiza una escena, por defecto WebGL utiliza un frame buffer que renderiza sobre el Canvas y al crear otro frame buffer configurado a una textura evitamos que se renderice sobre el Canvas y nos aseguramos de que el render se realice sobre esta textura
-        </p>
+        <p> A continuación crearemos un Frame Buffer, este buffer es un objeto utilizado para definir donde se renderiza una escena, por defecto WebGL utiliza un frame buffer que renderiza sobre el Canvas y al crear otro frame buffer configurado a una textura evitamos que se renderice sobre el Canvas y nos aseguramos de que el render se realice sobre esta textura.</p>
         <img src="./imgs/frameBuffer.PNG"><br>
         <code>Frame Buffer configurado con la textura anterior</code>
 
         <p> Finalmente, debemos renderizar la escena 2 veces, la primera se realizará sobre el render buffer declarado por nosotros y utilizando como textura de la geometría una imagen cargada anteriormente. 
-            Y posteriormente renderizamos una segunda vez declarando el frame buffer vacio lo cual renderizara por defecto al canvas y utilizando como textura de la geometría la imagen generada por el render anterior.
-        </p>
+            Y posteriormente renderizamos una segunda vez declarando el frame buffer vacio lo cual renderizara por defecto al canvas y utilizando como textura de la geometría la imagen generada por el render anterior.</p>
         <img src="./imgs/drawBuffer.PNG"><br>
         <code>Renderizacion de la escena 2 veces sobre Buffer y Canvas</code>
 
@@ -291,41 +288,40 @@
         <code>Escena de 3 cubos con textura del render de 3 cubos con textura de imagen</code>
     </section>
     <section>
-        <h2>Seleccion de Objetos con Mouse</h2>
-        <p> Para finzalizar utilizaremos los conceptos aprendidos anteriormente para desarrollar una funcionalidad de picking o seleccion de objetos con el mouse, esta funcionalidad es muy importante para la interaccion del usuario con los espacios tridimiensionales renderizados y su implementación sintetiza una gran parte de las ideas exploradas.</p>
-        <p> La implementación utiliza una tecnica que consiste en renderizar la escena 2 veces, el primer rénder se realiza sobre él canvas con la configuración del fragment shader que se desea presentar al usuario, una segunda renderización se hace sobre una textura invisible la cual utiliza un fragment shader muy simple que pinta cada objeto de un color especifico, este color esta predefinido según el ID del objeto por lo que cada objeto esta pintado de un color diferente. 
-            Si rastreamos la posicion del mouse y leemos el color del pixel sobre el que se encuentra actualmente el puntero podemos usar esta informacion para obtener el ID del objeto y a partir de esto referenciarlo en la lista de objetos de la escena.</p>
+        <h2>Selección de Objetos con el Mouse</h2>
+        <p> Para finalizar utilizaremos los conceptos aprendidos anteriormente para desarrollar una funcionalidad de picking o selección de objetos con el mouse, esta funcionalidad es muy importante para la interaccion del usuario con los espacios tridimensionales renderizados y su implementación sintetiza una gran parte de las ideas exploradas.</p>
+        <p> La implementación utiliza una técnica que consiste en renderizar la escena 2 veces, el primer rénder se realiza sobre él canvas con la configuración del fragment shader que se desea presentar al usuario, una segunda renderización se hace sobre una textura invisible la cual utiliza un fragment shader muy simple que pinta cada objeto de un color específico, este color está predefinido según el ID del objeto por lo que cada objeto se pinta con un color diferente. 
+            Si rastreamos la posición del mouse y leemos el color del pixel sobre el que se encuentra actualmente el puntero, podemos usar la información de color para obtener el ID del objeto y a partir de esto referenciarlo en la lista de objetos de la escena.</p>
         <p>Para desarrollar esto necesitamos definir 2 programas de WebGL, uno con la configuración necesaria para renderizar la escena y otro con un fragment shader muy simple que reciba un color como uniforme de manera que pinte todo el objeto de este color.</p>
         <img src="./imgs/pickerShader.PNG"><br>
         <code>Fragment Shader que pinta el objeto de un color</code>
 
-        <p> Cada objeto que agregamos utilizara su posicion en la lista para crear un color unico a partir de una serie de pequeñas operaciones de corrimiento de bits, esto nos permitira agregar una gran cantidad de objetos con colores unicos mientras al mismo tiempo esta operacion puede ser facilmente invertida para obtener la posicion original en la lista que referencia al objeto.
-            Para visualizar la seleccion tambien agregaremos una propiedad llamada multiplicador de color, este se pasara al fragment shader visible por el usuario y multiplicara el valor del color a dibujar para cambiar su apariencia.
-        </p>
+        <p> Cada objeto que agregamos usara su posición en la lista para crear un color único a partir de una serie de pequeñas operaciones de corrimiento de bits, esto nos permitirá agregar una gran cantidad de objetos con colores únicos mientras al mismo tiempo esta operación puede ser fácilmente invertida para obtener la posición original en la lista que referencia al objeto.
+            Para visualizar la selección también agregaremos una propiedad llamada multiplicador de color, este se pasara al fragment shader visible por el usuario y multiplicara el valor del color a dibujar para cambiar su apariencia.</p>
         <img src="./imgs/objsPick.PNG"><br>
-        <code>Definicion del color unico como propiedad del objeto</code>
-        
-        <p>Para renderizar la escena con esta informacion primero definimos una textura que asignaremos a un FrameBuffer e igualmente crearemos un RenderBuffer, este ultimo buffer nos permite utilizar la información del mapa de profundidad generado por WebGL para siempre seleccionar el primer objeto visible. </p>
+        <code>Definición del color único como propiedad del objeto</code>
+
+        <p>Para renderizar la escena con esta información primero definimos una textura que asignaremos a un FrameBuffer, igualmente implementaremos un RenderBuffer que nos permite agregar al FrameBuffer la información del mapa de profundidad generado por WebGL, esto evitara errores de profundidad en la renderización de objetos de los para siempre seleccionar el primer objeto que debería ser visible. </p>
         <img src="./imgs/pickerBuffer.PNG"><br>
         <code>Textura, Render Buffer y Frame Buffer para renderizar la escena fuera del canvas</code>
-        
-        <p> Al igual que en el ejemplo anterior renderizaremos la escena 2 veces, una hacia el Buffer de textura con la configuracion de los shaders del seleccionador, y otra hacia el canvas con la configuracion de los shaders de presentacion al usuario. 
-            Dentro del ciclo de dibujo nos aseguraremos de utilizar los atributos y uniformes correcta segun los shaders que se esten utilizando.
-        </p>
+
+        <p> Al igual que en el ejemplo anterior renderizaremos la escena 2 veces, una hacia el Buffer de textura con la configuración de los shaders del picker, y otra hacia el canvas con la configuración de los shaders de presentación al usuario. 
+            Dentro del ciclo de dibujo nos aseguraremos de utilizar los atributos y uniformes correctos según los shaders que se estén utilizando.</p>
         <img src="./imgs/drawCyclePicker.PNG"><br>
         <code>Renderización con ambas configuraciones</code><br><br><br>
 
         <img src="./imgs/shadersIfPicker.PNG"><br>
-        <code>Seleccion de uniformes y atributos segun el shader</code><br>
+        <code>Selección de uniformes y atributos según el shader</code><br>
 
-        <p> Para finalizar, Antes de renderizar el picker obtendremos la posicion del mouse en el canvas, leeremos el color del pixel que se esta señalando y finalmente calcularemos la referencia del objeto a partir del color.
-            Esto nos permitira hacer un pequeño cambio de color cuando se esta seleccionando el objeto.
-        </p>
+        <p> Para finalizar, antes de renderizar el picker obtendremos la posición del mouse en el canvas, leeremos el color del pixel que se está señalando y finalmente calcularemos la referencia al objeto señalado a partir del color.
+            Esto nos permitirá hacer un pequeño cambio de color cuando se está seleccionando el objeto.</p>
         <img src="./imgs/mousePicker.PNG"><br>
-        <code>Interaccion entre mouse y canvas</code>
+        <code>Interacción entre mouse y canvas</code>
+
+        <p>Con todos estos cambios podemos presentar la escena renderizada con múltiples objetos, si pasamos el mouse sobre cada uno de estos podemos observar como cambian de color.</p>
 
         <canvas id="canvas_18" width="800" height="600"></canvas>
-        <code>Seleccion de Objetos con el mouse</code>
+        <code>Selección de objetos con el mouse</code>
     </section>
     
 
