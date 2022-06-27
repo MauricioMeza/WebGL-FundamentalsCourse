@@ -61,7 +61,7 @@ function main(){
     gl.enableVertexAttribArray(positionAttributeLocation);
     gl.vertexAttribPointer(positionAttributeLocation, 3, gl.FLOAT, false, 0, 0);
 
-    //Define View Matrix
+    //Crear Uniforme con Matriz de Perspectiva (Near, Far, FOV)
     const viewMatrix = getMatrix3DView(0, 0, 0,   -0.5, 0,  1);
     var viewUniformLocation = gl.getUniformLocation(program, "u_matrix_view");
     gl.uniformMatrix4fv(viewUniformLocation, false, viewMatrix);
@@ -91,16 +91,12 @@ function main(){
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 256, 256, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
 
-
-
-    //-------DEFINIR FRAME y RENDER BUFFERS-------
-    //frame buffer
+    //Definir frame buffer
     var frameBuffer = gl.createFramebuffer();
     gl.bindFramebuffer(gl.FRAMEBUFFER, frameBuffer);
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, targetTexture, 0)
           
-    
-    //-------- DEFINE SCREEN --------
+    //Definir Propiedades de la Pantalla y Modo de Renderizacion
     gl.enable(gl.DEPTH_TEST) 
     gl.enable(gl.CULL_FACE)  
     
@@ -108,10 +104,9 @@ function main(){
     //-------- DRAW --------
     var Ry = 0;
     requestAnimationFrame(anim);
-
     function anim(){
         Ry += 0.01;
-        //Render a Frame Buffer con textura de imagen y fondo azul
+        //Render en el Frame Buffer con textura de imagen y fondo azul
         gl.bindFramebuffer(gl.FRAMEBUFFER, frameBuffer);
         gl.bindTexture(gl.TEXTURE_2D, cuyTexture);
         gl.viewport(0, 0, 256, 256);
@@ -119,7 +114,7 @@ function main(){
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         drawCube();
 
-        //Render a Canvas con textura de buffer y fondo azul
+        //Render en el Canvas con textura de buffer y fondo azul
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
         gl.bindTexture(gl.TEXTURE_2D, targetTexture);
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
@@ -134,13 +129,17 @@ function main(){
         //Define Perspective Matrix
         for(var i=0; i<3; i++){
             aspect = gl.canvas.width/gl.canvas.height
+            //Cargar Uniforme (Matriz de Perspectiva) segun aspecto del render (near, far, fov, aspect)
             const perspectiveMatrix = getMatrix3DPerspective(0.01, 100, 0.85, aspect);
             var perspectiveUniformLocation = gl.getUniformLocation(program, "u_matrix_perspective")
             gl.uniformMatrix4fv(perspectiveUniformLocation, false, perspectiveMatrix);
 
+            //Cargar Uniforme (Matriz de Tranformacion) cambiante (Tx,Ty,Tz, Sx,Sy,Sz, Rx,Ry,Rz)
             const transformMatrix = getMatrix3DTransform(-0.5+(i/2), -0.5+(i/2), 0,   1.5, 1.5, 1.5,   0, Ry, 0);
             var translateUniformLocation = gl.getUniformLocation(program, "u_matrix_transform")
             gl.uniformMatrix4fv(translateUniformLocation, false, transformMatrix);
+            
+            //Dibujar todos los triangulos del objeto en un solo Draw Call
             gl.drawArrays(gl.TRIANGLES, 0, cube.length/3)
         }
     }

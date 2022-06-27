@@ -118,7 +118,7 @@
 
 
         <br><br><h2>Dibujar Varios Triángulos</h2>
-        <p>Si queremos dibujar más de un triángulo podemos encerrar gran parte del código que dibuja el triángulo dentro de un ciclo donde la posición de los vértices y los colores son definidos de manera aleatoria, esto significa que se llamara varias veces a la función drawArrays() también conocida como llamada de dibujo o draw call. Al hacer esto obtendremos una gran cantidad de triángulos en la pantalla</p>
+        <p>Si queremos dibujar más de un triángulo podemos encerrar gran parte del código que dibuja el triángulo dentro de un ciclo donde la posición de los vértices y los colores son definidos de manera aleatoria, esto significa que se llama varias veces a la función drawArrays() también conocida como llamada de dibujo o draw call. Al hacer esto obtendremos una gran cantidad de triángulos en la pantalla</p>
 
         <img src="./imgs/cycleTriangles.PNG"><br>
         <code>Código de dibujo de triángulos en un ciclo</code>
@@ -165,11 +165,11 @@
 
         <p>La <b>Rotación</b> es un poco más compleja debido a que es necesario definir una operación separada para girar sobre cada eje, estas son definidas de mejor manera utilizando una matriz de rotación la cual es multiplicada con el vector de posición de cada vértice, al aplicarse esta multiplicación sobre cada vértice obtendremos una rotación del objeto sobre un eje específico por el valor de un ángulo tetha. Las 3 matrices se multiplican entre si para definir una sola matriz de rotación a la cual se le pasa un solo vector (Rx, Ry, Rz) como parámetro que define el ángulo de rotación en cada eje.</p>
         <img src="./imgs/rots.png"><br>
-        <code>Matrices de Rotacion para cada eje</code>
+        <code>Matrices de Rotación para cada eje</code>
         
         <p>Las operaciones de Translación y Escalado también pueden definirse como matrices gracias a la forma como se realiza la multiplicación de un vector por una matriz.</p>
         <img src="./imgs/mats.png"><br>
-        <code>Matrices de Trasnlacion y Escalado</code>
+        <code>Matrices de Translación y Escalado</code>
         
         <p>De esta manera al tener las operaciones como matrices podemos finalmente multiplicar todas las 5 matrices para definir una sola Matriz de Transformación, esta recibe como parámetros el movimiento en [X,Y,Z], el escalado en [X,Y,Z] y la rotación en [X,Y,Z] realizando estas 3 transformaciones en una sola operación.</p>
         <img src="./imgs/transform.PNG"><br>
@@ -229,7 +229,7 @@
     <section>
         <hr>
         <h2>Múltiples Objetos Animados</h2>
-        <p>Anteriormente hemos visto que para dibujar varios objetos dentro del mismo entorno podemos definir todos los vértices de todos los objetos dentro del mismo buffer de geometría, o también podemos usar múltiples llamados de dibujo con el mismo buffer aplicando cambios en cada uno de los objetos con diferentes matrices de movimiento. Sin embargo, para WebGL no existe ninguna diferencia entre estos objetos, la librería no guarda ninguna referencia con respecto a su posición, buffer de geometría, color o cualquier otra información de cada objeto, por esta razón para fácilmente dibujar y manipular varios objetos es necesario definir una variable que almacene en formato JSON la información de cada uno de los objetos 3D como el buffer que define su geometría, color, numero de vértices, posición, textura y cualquier otra propiedad que pueda ser únicamente de ese objeto.</p>
+        <p>Anteriormente hemos visto que para dibujar varios objetos dentro del mismo entorno podemos definir todos los vértices de todos los objetos dentro del mismo buffer de geometría, o también podemos usar múltiples llamados de dibujo con el mismo buffer aplicando cambios en la matriz de transformacion de cada uno de los objetos. Sin embargo, para WebGL no existe ninguna diferencia entre estos objetos, la librería no guarda ninguna referencia con respecto a su posición, buffer de geometría, color o cualquier otra información de cada objeto, por esta razón para fácilmente dibujar y manipular varios objetos es necesario definir una variable que almacene en formato JSON la información de cada uno de los objetos 3D en el entorno, información como el buffer que define su geometría, color, numero de vértices, posición, textura y cualquier otra propiedad que pueda ser únicamente de ese objeto.</p>
         <img src="./imgs/objs.png"><br>
         <code>Declaración de cada Objeto 3D y sus propiedades con información definida y aleatoria.</code>
 
@@ -257,7 +257,7 @@
         <img src="./imgs/texture.PNG"><br>
         <code>Creación de una variable de textura</code>
 
-        <p>Posteriormente para proyectarlas sobre la geometría de un objeto es necesario definir las coordenadas de la textura como un vector en 2 dimensiones que define la posición de cada vértice sobre la imagen, esta información es conocida como las coordenadas UV del objeto y pueden ser definidas dentro de un buffer.</p>
+        <p>A continuación para proyectar la textura sobre la geometría de un objeto es necesario definir las coordenadas de cada vertice sobre la imagen como un vector en 2 dimensiones [U,V], este vector define la posición de un vértice sobre la imagen y esta información en conjunto es conocida como las coordenadas UV del objeto, estas pueden ser definidas dentro de un buffer que se pasara luego al fragment shader.</p>
         <img src="./imgs/bufferUV.PNG"><br>
         <code>Buffer con las coordenadas UV del objeto</code>
 
@@ -270,13 +270,13 @@
 
 
         <h2>Renderización a una Textura con FrameBuffer</h2>
-        <p> Las texturas definidas en WebGL pueden ser imágenes cargadas como elementos de HTML (como en el anterior ejemplo) o también pueden ser generadas dinámicamente dentro de JavaScript, este tipo de texturas dinámicas nos permiten calcular información de la escena y reutilizarla dentro de esta misma para ayudar con diferentes tipos de funcionalidades.
-            Un ejemplo de esto es la capacidad de renderizar una escena dentro de una textura que posteriormente puede ser mapeada dentro de otro objeto, para hacer esto declaramos inicialmente una textura cuyo valor será vacío por el momento.
+        <p> Las texturas definidas en WebGL pueden ser imágenes cargadas como elementos de HTML (como en el anterior ejemplo) o también pueden ser generadas dinámicamente dentro de JavaScript, este tipo de texturas dinámicas nos permiten calcular información de la escena para reutilizarla dentro de esta misma lo cual puede ayudar con el desarrollo de diferentes tipos de funcionalidades.
+            Un ejemplo de esto es la capacidad de renderizar una escena dentro de una textura que posteriormente puede ser mapeada sobre un objeto, para hacer esto declaramos inicialmente una textura cuyo valor será vacío por el momento.
         </p>
         <img src="./imgs/targetTex.png"><br>
         <code>Textura vacia donde se renderizara la escena</code>
 
-        <p> A continuación crearemos un Frame Buffer el cual es un objeto donde se puede renderizar una escena, por defecto WebGL utiliza un frame buffer que renderiza sobre el Canvas y al crear otro frame buffer configurado a una textura evitamos que se renderice sobre el Canvas y nos aseguramos de que el render se realice sobre esta textura
+        <p> A continuación crearemos un Frame Buffer, este buffer es un objeto utilizado para definir donde se renderiza una escena, por defecto WebGL utiliza un frame buffer que renderiza sobre el Canvas y al crear otro frame buffer configurado a una textura evitamos que se renderice sobre el Canvas y nos aseguramos de que el render se realice sobre esta textura
         </p>
         <img src="./imgs/frameBuffer.PNG"><br>
         <code>Frame Buffer configurado con la textura anterior</code>
@@ -292,17 +292,40 @@
     </section>
     <section>
         <h2>Seleccion de Objetos con Mouse</h2>
-        <p> Para finzalizar utilizaremos los conceptos aprendidos anteriormente para desarrollar una funcionalidad de picking o seleccion de objetos con el mouse, esta funcionalidad es muy utilizada e importante dentro de la interaccion en espacios tridimiensionales y su implementación sintetiza una gran parte de las ideas exploradas.</p>
+        <p> Para finzalizar utilizaremos los conceptos aprendidos anteriormente para desarrollar una funcionalidad de picking o seleccion de objetos con el mouse, esta funcionalidad es muy importante para la interaccion del usuario con los espacios tridimiensionales renderizados y su implementación sintetiza una gran parte de las ideas exploradas.</p>
         <p> La implementación utiliza una tecnica que consiste en renderizar la escena 2 veces, el primer rénder se realiza sobre él canvas con la configuración del fragment shader que se desea presentar al usuario, una segunda renderización se hace sobre una textura invisible la cual utiliza un fragment shader muy simple que pinta cada objeto de un color especifico, este color esta predefinido según el ID del objeto por lo que cada objeto esta pintado de un color diferente. 
-            Si rastreamos la posicion del mouse y leemos el color del pixel sobre el que se encuentra actualmente podemos usar esta informacion para obtener el ID del objeto y a partir de esto referenciarlo en la lista de objetos.</p>
+            Si rastreamos la posicion del mouse y leemos el color del pixel sobre el que se encuentra actualmente el puntero podemos usar esta informacion para obtener el ID del objeto y a partir de esto referenciarlo en la lista de objetos de la escena.</p>
         <p>Para desarrollar esto necesitamos definir 2 programas de WebGL, uno con la configuración necesaria para renderizar la escena y otro con un fragment shader muy simple que reciba un color como uniforme de manera que pinte todo el objeto de este color.</p>
         <img src="./imgs/pickerShader.PNG"><br>
         <code>Fragment Shader que pinta el objeto de un color</code>
 
-        <p>Definimos una textura sobre la cual renderizaremos la escena utilizando un FrameBuffer y definimos un RenderBuffer que nos permita utilizar la información del mapa de profundidad generado por WebGL para siempre seleccionar el primer objeto visible. </p>
+        <p> Cada objeto que agregamos utilizara su posicion en la lista para crear un color unico a partir de una serie de pequeñas operaciones de corrimiento de bits, esto nos permitira agregar una gran cantidad de objetos con colores unicos mientras al mismo tiempo esta operacion puede ser facilmente invertida para obtener la posicion original en la lista que referencia al objeto.
+            Para visualizar la seleccion tambien agregaremos una propiedad llamada multiplicador de color, este se pasara al fragment shader visible por el usuario y multiplicara el valor del color a dibujar para cambiar su apariencia.
+        </p>
+        <img src="./imgs/objsPick.PNG"><br>
+        <code>Definicion del color unico como propiedad del objeto</code>
+        
+        <p>Para renderizar la escena con esta informacion primero definimos una textura que asignaremos a un FrameBuffer e igualmente crearemos un RenderBuffer, este ultimo buffer nos permite utilizar la información del mapa de profundidad generado por WebGL para siempre seleccionar el primer objeto visible. </p>
         <img src="./imgs/pickerBuffer.PNG"><br>
         <code>Textura, Render Buffer y Frame Buffer para renderizar la escena fuera del canvas</code>
-        <canvas id="canvas_17" width="800" height="600"></canvas><br>
+        
+        <p> Al igual que en el ejemplo anterior renderizaremos la escena 2 veces, una hacia el Buffer de textura con la configuracion de los shaders del seleccionador, y otra hacia el canvas con la configuracion de los shaders de presentacion al usuario. 
+            Dentro del ciclo de dibujo nos aseguraremos de utilizar los atributos y uniformes correcta segun los shaders que se esten utilizando.
+        </p>
+        <img src="./imgs/drawCyclePicker.PNG"><br>
+        <code>Renderización con ambas configuraciones</code><br><br><br>
+
+        <img src="./imgs/shadersIfPicker.PNG"><br>
+        <code>Seleccion de uniformes y atributos segun el shader</code><br>
+
+        <p> Para finalizar, Antes de renderizar el picker obtendremos la posicion del mouse en el canvas, leeremos el color del pixel que se esta señalando y finalmente calcularemos la referencia del objeto a partir del color.
+            Esto nos permitira hacer un pequeño cambio de color cuando se esta seleccionando el objeto.
+        </p>
+        <img src="./imgs/mousePicker.PNG"><br>
+        <code>Interaccion entre mouse y canvas</code>
+
+        <canvas id="canvas_18" width="800" height="600"></canvas>
+        <code>Seleccion de Objetos con el mouse</code>
     </section>
     
 
@@ -328,8 +351,9 @@
     <script src="./10-3DAnimado.js"></script>
     <script src="./11-3DMultiplesObjetosAnimados.js"></script>
     <script src="./12-3DMultiplesTiposdeObjetosAnimados.js"></script>
-    <script src="./13-3DTexturaAnimada.js"></script>
-    <script src="./17-3DRenderToTextureDepth.js"></script>
-    <script src="./18-PICKING.js"></script>
+    <script src="./13-3DObjetoConTextura.js"></script>
+    <script src="./14-RenderSobreTextura.js"></script>
+    <script src="./15-PICKINGNoOpt.js"></script>
+    
 </body>
 </html>

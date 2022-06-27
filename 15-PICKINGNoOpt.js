@@ -55,7 +55,7 @@ main();
 
 function main(){
     //Cargar el canvas y los shaders
-    var canvas = document.getElementById("canvas_17");
+    var canvas = document.getElementById("canvas_18");
     var gl = canvas.getContext("webgl");
     var program = createProgramFromShaders(gl, vert_shader, frag_shader);
     var programPicker = createProgramFromShaders(gl, vert_shader_picker, frag_shader_picker);
@@ -73,32 +73,20 @@ function main(){
         mouseX = e.clientX - rect.left;
         mouseY = e.clientY - rect.top;
     });
-    //Obtener un Frustum de un solo pixel
-    function getMousePixelFrustum(){
-        const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;  
-        const top = Math.tan(fov * 0.5) * near;
-        const bottom = -top;
-        const left = aspect * bottom;
-        const right = aspect * top;
-        const width = Math.abs(right - left);
-        const height = Math.abs(top - bottom);
-
+    //Obetener el color del pixel sobre el mouse y el ID del objeto
+    function getObjectFromPixel(){
+        //Obtener posicion del mouse en el canvas
         const pixelX = mouseX * w / gl.canvas.clientWidth;
         const pixelY = h - mouseY * h / gl.canvas.clientHeight - 1;
-        const subLeft = left + pixelX * width / w;
-        const subBottom = bottom + pixelY * height / h;
-        const subRight = subLeft + (width / w);
-        const subTop = subBottom + (height / h);
-        const frustumMatrix = matFrustum(subLeft, subRight, subBottom, subTop, near, far)
 
-        return frustumMatrix;
-    }
-    //Obetener un objeto a partir del color del pixel
-    function getObjectFromPixel(){
+        //Leer color en esa posicion
         const data = new Uint8Array(4);
-        gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, data);
+        gl.readPixels(pixelX, pixelY, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, data);
+
+        //Calcular ID a partir del color
         const id = data[0] + (data[1] << 8) + (data[2] << 16) + (data[3] << 24);
 
+        //Visualizacion de la seleccion
         if (oldPickNdx >= 0) {
             objs[oldPickNdx].colorMult = [1,1,1,1];
             oldPickNdx = -1;
@@ -111,7 +99,6 @@ function main(){
             objs[pickNdx].colorMult = [1,1,0,1];
             canvas.style.cursor = "pointer";
         }
-
     }
 
     //------- OBJETOS EN LA ESCENA --------
@@ -120,24 +107,21 @@ function main(){
     var positionAttributeLocation = gl.getAttribLocation(programPicker, "a_position")
     var colorAttributeLocation = gl.getAttribLocation(program, "a_color")
     
-    //Crear Buffers Buffers
+    //Crear Buffers 
     var cubePosBuffer = gl.createBuffer()
     gl.bindBuffer(gl.ARRAY_BUFFER, cubePosBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(create3DCube()), gl.STATIC_DRAW);
-
     var cubeColBuffer = gl.createBuffer()
     gl.bindBuffer(gl.ARRAY_BUFFER, cubeColBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(create3DCubeColors()), gl.STATIC_DRAW);
-
     var fPosBuffer = gl.createBuffer()
     gl.bindBuffer(gl.ARRAY_BUFFER, fPosBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(create3DF()), gl.STATIC_DRAW);
-
     var fColBuffer = gl.createBuffer()
     gl.bindBuffer(gl.ARRAY_BUFFER, fColBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(create3DFColors()), gl.STATIC_DRAW);
 
-    //Crear Objetos y añadirlos a la lista
+    //Crear Objetos de diferentes tipos y añadirlos a la lista
     var objs = []
     for(var i=0; i<15; i++){
         const id1 = (i*2)+1
@@ -175,19 +159,14 @@ function main(){
         });
     }
 
-    //Declarar Matriz de Perspectiva (Near, Far, FOV) 
-    var near = 0.01;
-    var far = 100;
-    var fov = 1.6; 
-    const perspectiveMatrix = matPerspectiveAspect(near, far, fov, aspect);
-
-    //Declarar Matriz de Vista (Near, Far, FOV)
+    //Declarar Matrices de Perspectiva (Near, Far, FOV) y Vista (Tx,Ty,Tz, Rx,Ry, Zoom)
+    const perspectiveMatrix = matPerspectiveAspect(0.01, 100, 1.6, aspect);
     const viewMatrix = getMatrix3DView(0, 0, 0,   -0.5, 1.5,  2.5);
     
     //Definir parametros de renderizado y pantalla
     gl.clearColor(1,1,1,1);
+    gl.viewport(0, 0, w, h);
     gl.enable(gl.DEPTH_TEST) 
-
 
 
     //------ RENDER Y FRAME BUFFERS ------
@@ -209,60 +188,57 @@ function main(){
     gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, w, h);
     gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, depthBuffer);
     
-    //-------- DRAW --------
-    var ticker = 0;
+
+    //-------- CICLO DE DIBUJO --------
     requestAnimationFrame(draw);
     function draw(){
-        ticker += 0.01
-
-        //Definir matriz de transformacion y animar el movimiento
+        //Animar el movimiento una sola vez
         objs.forEach((obj) => {
-            obj.uniforms.u_matrix_transform = getMatrix3DTransform(
-            obj.pos.x, obj.pos.y, obj.pos.z,   
-            obj.scl.x, obj.scl.y, obj.scl.z,
-            obj.rot.x + ticker, obj.rot.y + ticker, obj.rot.z);
+            obj.rot.x += 0.01;
+            obj.rot.y += 0.02;
         })
 
         //Renderizar sobre el buffer con los shaders del picker
-        const frustumMatrix = getMousePixelFrustum();
         gl.bindFramebuffer(gl.FRAMEBUFFER, frameBuffer);
-        gl.viewport(0, 0, w, h);
-        drawObjs(programPicker, frustumMatrix, true);
+        drawObjs(programPicker, true);
         
-        //Renderizar sobre el buffer con los shaders de presentacion
+        //Renderizar sobre el canvas con los shaders de presentacion
         getObjectFromPixel();
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-        gl.viewport(0, 0, w, h);
-        drawObjs(program, perspectiveMatrix, false);
+        drawObjs(program, false);
         requestAnimationFrame(draw);
     }
 
-    function drawObjs(program, pMatrix, onCanvas){
+    function drawObjs(program, onCanvas){
         //Refrescar la pantalla
         gl.useProgram(program);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         objs.forEach((obj) =>{
-            //---Atributos y Uniformes comunes de ambos programas---
-            //Atributo de Posicion
+            //Atributo de Posicion comun en ambos shaders
             gl.bindBuffer(gl.ARRAY_BUFFER, obj.bufferPos);
             gl.enableVertexAttribArray(positionAttributeLocation);
             gl.vertexAttribPointer(positionAttributeLocation, 3, gl.FLOAT, false, 0, 0); 
-            //Uniformes con Matrices de Transformacion, Vista y Perspectiva
+
+            //Uniformes con Matrices de Transformacion, Vista y Perspectiva comunes en ambos shaders
             var transUniformLocation = gl.getUniformLocation(program, "u_matrix_transform");
+            obj.uniforms.u_matrix_transform = getMatrix3DTransform(
+                obj.pos.x, obj.pos.y, obj.pos.z,   
+                obj.scl.x, obj.scl.y, obj.scl.z,
+                obj.rot.x, obj.rot.y, obj.rot.z);
             gl.uniformMatrix4fv(transUniformLocation, false, obj.uniforms.u_matrix_transform);
             var perspectiveUniformLocation = gl.getUniformLocation(program, "u_matrix_perspective")
-            gl.uniformMatrix4fv(perspectiveUniformLocation, false, pMatrix);
+            gl.uniformMatrix4fv(perspectiveUniformLocation, false, perspectiveMatrix);
             var viewUniformLocation = gl.getUniformLocation(program, "u_matrix_view");
             gl.uniformMatrix4fv(viewUniformLocation, false, viewMatrix);
 
-            //---Atributos y Uniformes segun el programa---
+            //---Atributos y Uniformes segun el shader---
             if(onCanvas){
                 //Color identificador para el picker
                 var idUniformLocation = gl.getUniformLocation(program, "u_id");
                 gl.uniform4fv(idUniformLocation, obj.i);
             }else{
-                //Colores y Multiplicador para el de presentacion
+                //Colores y Multiplicador para la presentacion
                 gl.bindBuffer(gl.ARRAY_BUFFER, obj.bufferCol);
                 gl.enableVertexAttribArray(colorAttributeLocation);
                 gl.vertexAttribPointer(colorAttributeLocation, 3, gl.FLOAT, false, 0, 0); 
@@ -270,7 +246,6 @@ function main(){
                 gl.uniform4fv(colmultUniformLocation, obj.colorMult); 
             }
 
-            //Llamada de dibujo
             gl.drawArrays(gl.TRIANGLES, 0, 100)
         })
     }    
