@@ -134,6 +134,7 @@ function main(){
             bufferPos: cubePosBuffer, 
             bufferCol: cubeColBuffer,
             colorMult : [1,1,1,1],
+            vertCount : create3DCube().length/3,
             uniforms: {
                 u_matrix_transform: matIdentity()
             },
@@ -146,6 +147,7 @@ function main(){
             bufferPos: fPosBuffer, 
             bufferCol: fColBuffer,
             colorMult : [1,1,1,1], 
+            vertCount : create3DF().length/3,
             i: [((id2 >>  0) & 0xFF) / 0xFF,
                 ((id2 >>  8) & 0xFF) / 0xFF,
                 ((id2 >> 16) & 0xFF) / 0xFF,
@@ -246,7 +248,7 @@ function main(){
                 gl.uniform4fv(colmultUniformLocation, obj.colorMult); 
             }
 
-            gl.drawArrays(gl.TRIANGLES, 0, 100)
+            gl.drawArrays(gl.TRIANGLES, 0, obj.vertCount)
         })
     }    
 }
