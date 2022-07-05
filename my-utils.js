@@ -116,24 +116,19 @@ function matPerspective(nr, fr, fov){
           0,      0,   (nr*fr)/(nr-fr)*2,  1]   
 }
 
-function matPerspectiveAspect(near, far, fov, aspct){
+function matPerspectiveAspect(nr, fr, fov, aspc){
   var f = Math.tan(Math.PI * 0.5 - 0.5 * fov);
-  var rangeInv = 1.0 / (near - far);
-  return [f/aspct, 0, 0, 0,
-          0, f, 0, 0,
-          0, 0, (near+far)*rangeInv, -1,
-          0, 0, near*far*rangeInv*2, 0]   
+  return [f/aspc, 0,   0,                  0,
+          0,      f,   0,                  0,
+          0,      0,   (nr+fr)/(nr-fr),   -1,
+          0,      0,   (nr*fr)/(nr-fr)*2,  0]     
 }
 
-function matFrustum(l, r, b, t, nr, fr){
-  var dx = r - l;
-  var dy = t - b;
-  var dz = fr - nr;
-
-  return [2*nr/dx,  0,        0,            0,
-          0,        2*nr/dy,  0,            0,
-          (l+r)/dx, (t+b)/dy, -(fr+nr)/dz, -1,
-          0,        0,        -2*nr*fr/dz, 0]
+function matFrustum(izq, der, abj, arr, nr, fr){
+  return [2*nr/(der-izq),       0,                    0,                 0,
+          0,                    2*nr/(arr-abj),       0,                 0,
+          (der+izq)/(der-izq),  (arr+abj)/(arr-abj),  -(fr+nr)/(fr-nr), -1,
+          0,                    0,                    -2*nr*fr/(fr-nr),  0]
 }
 
 function getMatrix3DTransform(Tx, Ty, Tz, Sx, Sy, Sz, Rx, Ry, Rz){
