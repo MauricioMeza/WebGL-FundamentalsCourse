@@ -20,6 +20,15 @@
         margin-bottom: 8px;
         display: block;
     }
+    .canvas-side{
+        padding-left: 0;
+        padding-right: 0;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 50px;
+        margin-bottom: 8px;
+        display: inline;    
+    }
     p{
         font-size: large;
         margin: 2vw 15vw;
@@ -70,7 +79,7 @@
         <hr>
         <h2>¿Que es WebGL?</h2>
         <p> WebGL es una librería de rasterizado que a nivel más simple está diseñada para dibujar líneas, puntos y triángulos sobre un Canvas de HTML, muchas aplicaciones incluso ignoran todas sus funcionalidades de renderización 3D y lo utilizan solamente para generar y manipular gráficos en 2D, es por esto que todas las abstracciones comunes de los software de manipulación y renderización 3D como Objetos, Cámaras, Materiales, Luces y muchos otros de estos conceptos deben desarrollarse prácticamente desde cero con las herramientas que WebGL provee, esto se realiza al desglosar cada uno de estos componentes de un ambiente 3D en sus conceptos matemáticos más básicos como Vectores, Matrices y Escalares. 
-            Al reducir la generación de gráficos a estos conceptos y operaciones del álgebra lineal, se convierte el proceso de renderización en instrucciones fácilmente computables y paralelizables de manera que puedan ser ejecutadas de una manera óptima por parte de la GPU.</p>    
+            Al reducir la generación de gráficos a estos conceptos y operaciones del álgebra lineal, se convierte el proceso de renderización en instrucciones fácilmente computables y paralelizables de manera que puedan ser optimamente ejecutadas por la GPU (Unidad de Procesamiento de Graficos).</p>    
         <img id="img-wgl" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/WebGL_Logo.svg/1920px-WebGL_Logo.svg.png">
     </section>
     <section>
@@ -301,7 +310,7 @@
         <img src="./imgs/objsPick.PNG"><br>
         <code>Definición del color único como propiedad del objeto</code>
 
-        <p>Para renderizar la escena con esta información primero definimos una textura que asignaremos a un FrameBuffer, igualmente implementaremos un RenderBuffer que nos permite agregar al FrameBuffer la información del mapa de profundidad generado por WebGL, esto evitara errores de profundidad en la renderización de objetos de los para siempre seleccionar el primer objeto que debería ser visible. </p>
+        <p>Para renderizar la escena con esta información primero definimos una textura que asignaremos a un FrameBuffer, igualmente implementaremos un RenderBuffer que nos permite agregar al FrameBuffer la información del mapa de profundidad generado por WebGL, esto evitara errores y sobrelapamientos de profundidad en la renderización de los objetos para siempre seleccionar el primer objeto que debería ser visible. </p>
         <img src="./imgs/pickerBuffer.PNG"><br>
         <code>Textura, Render Buffer y Frame Buffer para renderizar la escena fuera del canvas</code>
 
@@ -313,15 +322,72 @@
         <img src="./imgs/shadersIfPicker.PNG"><br>
         <code>Selección de uniformes y atributos según el shader</code><br>
 
-        <p> Para finalizar, antes de renderizar el picker obtendremos la posición del mouse en el canvas, leeremos el color del pixel que se está señalando y finalmente calcularemos la referencia al objeto señalado a partir del color.
-            Esto nos permitirá hacer un pequeño cambio de color cuando se está seleccionando el objeto.</p>
+        <p> Para finalizar, antes de renderizar el picker obtendremos la posición del mouse en el canvas, leeremos el color del pixel debajo del puntero y finalmente calcularemos la referencia al objeto señalado a partir del color.
+            Esto nos permitirá hacer un pequeño cambio de color cuando se está "seleccionando" el objeto.</p>
         <img src="./imgs/mousePicker.PNG"><br>
         <code>Interacción entre mouse y canvas</code>
 
-        <p>Con todos estos cambios podemos presentar la escena renderizada con múltiples objetos, si pasamos el mouse sobre cada uno de estos podemos observar como cambian de color.</p>
+        <p>Con todos estos cambios podemos presentar una escena renderizada con múltiples objetos, si pasamos el mouse sobre cada uno de estos podemos observar como cambian de color.</p>
 
         <canvas id="canvas_18" width="800" height="600"></canvas>
         <code>Selección de objetos con el mouse</code>
+
+        <h2>Optimización del Picking</h2>
+        <p> Todos estos cálculos realizados para implementar la funcionalidad de picking se ejecutan en cada frame (aprox. 20-30 veces por segundo) y por esta razón es muy importante optimizar todas las funciones de la mejor manera posible.
+            Una manera de lograr esto es limitando la renderización de la escena sobre el frame buffer a solamente el pixel que se encuentra debajo del mouse, así no estamos renderizando la escena completa 2 veces cada frame y al mismo tiempo obtenemos la información requerida (color del pixel debajo del mouse).</p>
+
+        <p> Para realizar esto utilizaremos una matriz conocida como Matriz de Frustum, esta nos permitirá declarar el frustum de perspectiva utilizando los parámetros arriba, abajo, izquierda y derecha del plano cercano en lugar de utilizar el FOV (field of view), con esta podremos definir un plano cercano de solamente un pixel.</p>
+        <img src="./imgs/matrizFrustum.PNG"><br>
+        <code>Matriz de Frustum</code>
+        
+        <p> Si queremos obtener un frustum de un solo pixel, primero debemos obtener los valores requeridos para crear una perspectiva igual a la que hemos estado usando anteriormente pero con los parámetros que nos pide la matriz de frustum, para esto utilizaremos una función que calculara estos valores a partir de las variables cercano(near), lejano(far), relación de aspecto(aspect) y campo de visión(fov) que hemos declarado anteriormente.
+            Esta función solo será llamada una vez por fuera del ciclo de dibujo, en este caso se ejecutará justo después de calcular la matriz de perspectiva.</p>
+        <img src="./imgs/paramFrustum.PNG"><br>
+        <code>Parámetros de la Matriz de Frustum con Near, Far, Aspect y FOV</code>
+            
+        <p> Una vez tengamos estos valores los utilizaremos en conjunto con la posición del mouse para calcular los parámetros arriba, abajo, izquierda y derecha requeridos para encerrar el pixel debajo del puntero. 
+            Esta función la ejecutaremos en cada llamada de dibujo, justo antes de renderizar sobre el frame buffer y tanto la renderización como la misma textura del frame buffer serán configuradas para solo consistir de un pixel.</p>
+        <img src="./imgs/getPixelFrustum.PNG"><br>
+        <code>Definición de la matriz de frustum la cual se pasa como parámetro a la función de dibujo</code>
+            
+        <p>Con esta configuración ya no es necesario determinar la posición del mouse al buscar el color del pixel que debemos identificar, solamente debemos leer el color del primer y único pixel en el frame buffer justo antes de renderizar la escena para presentar al usuario.</p>
+        <img src="./imgs/getColorFrustum.PNG"><br>
+        <code>configuración para leer el color del pixel.</code>
+         
+        <p>Con estos cambios el picking seguirá funcionando de la misma manera, pero esta vez será mucho más óptimo.</p>
+        <canvas id="canvas_17" width="800" height="600"></canvas>
+
+        <h2>Comparacion con otros metodos de Picking</h2>
+        <p> Existen varios métodos de implementar picking según las necesidades y complejidad del software, por ejemplo en Three.js la selección de objetos se puede implementar usando la funcionalidad de Ray Casting, esta permite emitir un rayo desde la cámara que pasa por la posición del mouse y automáticamente detecta los objetos intersectados por el rayo en un orden especifico, de esta manera se puede calcular el objeto debajo del mouse y también se puede extender esta funcionalidad para otros usos según sea necesario.
+            En la página de P5.js existe un <a href="https://p5js.org/es/examples/3d-ray-casting.html">ejemplo</a> que hace una aproximación de esta técnica dentro de un entorno generado por planos, esta utiliza una función matemática que detecta el punto de colisión entre el rayo dirigido por el mouse y cualquiera de los planos. Calculando funciones similares para cada primitiva se podría crear una funcionalidad similar a la que implementa Three.js dentro de P5; sin embargo, la técnica del rénder con colores únicos es mucho más simple y se adaptaría más al estilo de librería que P5.js trata de ser.</p>
+        <img src="./imgs/raycasting.png"><br>
+        <code>Ilustración Raycasting - tomado de la <a href="https://www.researchgate.net/publication/268441139_Efficient_Methods_for_Direct_Volume_Rendering_of_Large_Data_Sets">publicación</a></code>
+        
+        <p> Otra técnica muy utilizada es el método de bounding-box (cubo envolvente) el cual busca generar una geometría alrededor del objeto que pueda hacer más fácil detectar la selección, dependiendo de la implementación puede ser una geometría 3D que envuelve el volumen del objeto sobre la escena o una geometría 2D que encierra el área del objeto sobre la pantalla.
+            En el caso 3D se puede hacer uso del Ray Casting para detectar la colisión del rayo con la geometría envolvente (generalmente un cubo o una esfera) lo cual será mucho más fácil de calcular, en el caso 2D simplemente debemos detectar si el mouse en la pantalla se encuentra adentro o afuera de la geometría envolvente sobre el canvas (generalmente un circulo o un cuadrado).
+            La librería <a href="https://github.com/VisualComputing/p5.treegl">treegl</a> para el motor gráfico de P5.js presenta un acercamiento a esta técnica utilizando el método de Boundig Box 2D directamente en JavaScript.</p>
+        
+        <p>En el <a href="./picking.html">siguiente link</a> podemos ver una comparación de ambos métodos dentro de una escena parecida para demostrar que su funcionamiento es muy similar; sin embargo, se pueden notar ciertas diferencias dependiendo de la implementación.
+        Por ejemplo en WebGL al utilizar el Render Buffer con la información de profundidad solamente seleccionaremos los objetos que estén al frente de la pantalla, con la implementación de bounding box 2D no existe una revisión de profundidad y por tanto podemos seleccionar varios objetos que se encuentran intersectados e incluso son seleccionados los objetos que se encuentran detrás de la selección.</p> 
+        <img src="./imgs/overlay.png"><br>
+        <code>La implemntación con WebGL no permite seleccionar varios objetos, la implementación de bounding-box 2D si lo permite.</code>
+        
+        <p> Esto también sucede porque la implementación de Boundig Box itera por cada objeto en la escena y retorna verdadero si el mouse está sobre él, esto puede ser útil dependiendo de la funcionalidad que se desee implementar en conjunto con el picking, sin embargo también puede generar problemas de rendimiento cuando se tiene demasiados objetos en la escena.
+            Aqui tenemos 2 implementaciones del <a href="./pickingTestWebGL.html">Picking con Colores en WebGL</a> y <a href="./pickingTestTree.html">Picking con Boundig Box en Javascript</a> donde instanciamos una gran cantidad de objetos y medimos el frame rate de cada escena, se puede apreciar que el picking con colores al no iterar sobre todos los objetos para definir la selección tiene una ejecución mucho más óptima. Aun así la perdida de rendimiento solamente se da con una gran cantidad de objetos y no es tan pronunciada, por lo que una implementación de bounding box podría ser útil según la funcionalidad de interacción que se desea desarrollar.</p>
+        <img src="./imgs/fps.jpg"><br>
+        <code>Comparación de rendimiento entre WebGL (44 FPS) y Javascript (24 FPS) con mil objetos.</code>
+        
+        <h2>Conclusiones</h2>
+        <p> Aunque utilizar WebGL directamente es un proceso arduo, complejo y difícil, fue muy necesario para entender de manera completa todo el proceso de renderizado que las librerías de JavaScript tratan de esconder, solo así es posible entender el código fuente de estos proyectos con el propósito de desarrollar aportes o librerías que complementen sus funcionalidades actuales. Así mismo, el uso de shaders personalizados dentro de estas librerías puede ser una gran herramienta para generar efectos complejos que son difíciles de implementar con sus funcionalidades por defecto, para este propósito el acercamiento a código de WebGL nativo me ayudo a comprender muchos conceptos sobre el uso de Shaders que no tenía muy claro anteriormente.</p>
+        <p> A pesar de que la mayoría de los motores gráficos para WebGL intentan cumplir propósitos similares y pueden lograr resultados similares, difieren mucho en el estilo del código y los métodos que emplean para implementar ciertas funcionalidades según las necesidades de comportamiento, optimización, facilidad de uso, etc. 
+            De esta manera, aunque tenga un grado de dificultad mucho mayor, al adentrarnos con WebGL dentro del pipeline de renderización podemos manipular el proceso de dibujo de una manera muy personalizada y lograr los resultados más óptimos y correctos para las funcionalidades que queremos implementar.</p>
+
+        <h2>Bibliografia</h2>
+        <p>- Gregg Tavares. 2015. WebGL Fundamentals. <a href="https://webglfundamentals.org/">https://webglfundamentals.org/</a></p>
+        <p>- Edward Angel and Dave Shreiner. 2014. An Introduction to WebGL Programming. SIGGRAPH University (Siggraph 2014). <a href="https://www.youtube.com/watch?v=tgVLb6fOVVc">https://www.youtube.com/watch?v=tgVLb6fOVVc</a></p>
+        <p>- Bruno Simon. 2020. Three.js Journey. <a href="https://threejs-journey.com/">https://threejs-journey.com/</a></p>
+        <p>- Kouichi Matsuda and Rodger Lea. 2013. WebGL Programming Guide: Interactive 3D Graphics Programming with WebGL. <a href="https://sites.google.com/site/webglbook/ ">https://sites.google.com/site/webglbook/</a></p>
+        <p>- Wayne Brown. 2015. Learn WebGL. <a href="http://learnwebgl.brown37.net/index.html">http://learnwebgl.brown37.net/index.html</a></p>
     </section>
     
 
@@ -333,7 +399,6 @@
     
 
     <script src="./my-utils.js"></script>
-    <script src="./webgl-utils.js"></script>
     
     <script src="./01-triangulo.js"></script>
     <script src="./02-trianguloColores.js"></script>
@@ -349,7 +414,7 @@
     <script src="./12-3DMultiplesTiposdeObjetosAnimados.js"></script>
     <script src="./13-3DObjetoConTextura.js"></script>
     <script src="./14-RenderSobreTextura.js"></script>
-    <script src="./15-PICKINGNoOpt.js"></script>
-    
+    <script src="./15-PICKINGNoOptimizado.js"></script>
+    <script src="./16-PICKING_FINAL.js"></script>
 </body>
 </html>
