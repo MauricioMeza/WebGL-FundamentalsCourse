@@ -8,6 +8,8 @@
     <style>
     body{
         background-color: thistle;
+        text-align: center;
+        font-family: Arial, Helvetica, sans-serif;
     }
     h2{
         text-align: center;
@@ -17,18 +19,28 @@
         padding-right: 0;
         margin-left: auto;
         margin-right: auto;
-        display: block;
+        display: inline;
+    }
+    div{
+        display: inline;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
     }
     </style>
 </head>
 <body>
-    <canvas id="canvas_18" width="800" height="600"></canvas>
-    
+    <h2>Comparacion Picking - WebGL (Nativo) / Tree.gl (P5)</h2>
+    <div id="comp" canvW="400" canvH="600" num="50" trange="150">
+        <canvas id="canvas_20" width="400" height="600" num="50" trange="1.5"></canvas>
+    </div>  
 
     <script src="./my-utils.js"></script>
-    <script src="./webgl-utils.js"></script>
     
-    <script src="./01-triangulo.js"></script>
-    <script src="./15-PICKINGNoOpt.js"></script>
+    <script src="./20-PickingCompWebGL.js"></script>
+    <script src="./21-PICKINGCompTree.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.1/p5.min.js"></script>
+    <script src="./p5.treegl.js"></script>
 </body>
 </html>
